@@ -44,6 +44,6 @@ function ComingSoon() {
 export default function Home() {
   // Keep the original landing content in the codebase, but don't show it.
   // Flip this to `true` later if you want to restore the full landing page.
-  const showLanding = false;
+  const showLanding = true;
   return showLanding ? <LandingContent /> : <ComingSoon />;
 }
