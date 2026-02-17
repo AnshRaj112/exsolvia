@@ -1,105 +1,101 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import styles from './blog.module.scss';
 
-interface Blog {
-  _id: string;
-  title: string;
-  description: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import styles from "./page.module.scss";
 
-export default function BlogPage() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
-
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/blogs');
-      const data = await response.json();
-
-      if (data.success) {
-        setBlogs(data.data);
-        setError(null);
-      } else {
-        setError(data.error || 'Failed to load blogs');
-      }
-    } catch (err) {
-      setError('Failed to fetch blogs');
-      console.error('Error fetching blogs:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
+export default function Home() {
   return (
-    <div className={styles.blogPage}>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Our Blog</h1>
-          <p className={styles.subtitle}>
-            Stay updated with our latest news, insights, and updates
+    <main className={styles.page}>
+
+      {/* Navbar */}
+      <nav className={styles.navbar}>
+        <h2 className={styles.logo}>Exsolvia</h2>
+
+        <ul className={styles.menu}>
+          <li>Product</li>
+          <li>Solutions</li>
+          <li>Company</li>
+          <li>Contact</li>
+        </ul>
+
+        <button className={styles.primaryBtn}>
+          Get Started
+        </button>
+      </nav>
+
+      {/* Hero Section */}
+      <section className={styles.hero}>
+
+        <div className={styles.heroText}>
+          <h1>
+            One Platform. <br />
+            Endless Possibilities.
+          </h1>
+
+          <p>
+            Build, manage, and scale your digital
+            products with Exsolvia.
           </p>
-        </header>
 
-        {loading && (
-          <div className={styles.loading}>Loading blogs...</div>
-        )}
+          <div className={styles.heroButtons}>
+            <button className={styles.primaryBtn}>
+              Start Free
+            </button>
 
-        {error && (
-          <div className={styles.error}>Error: {error}</div>
-        )}
+            <button className={styles.secondaryBtn}>
+              Book Demo
+            </button>
+          </div>
+        </div>
 
-        {!loading && !error && (
-          <>
-            {blogs.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>No blog posts available at the moment. Check back soon!</p>
-              </div>
-            ) : (
-              <div className={styles.blogsGrid}>
-                {blogs.map((blog) => (
-                  <article key={blog._id} className={styles.blogCard}>
-                    <div className={styles.blogCardContent}>
-                      <h2 className={styles.blogTitle}>{blog.title}</h2>
-                      <p className={styles.blogDescription}>{blog.description}</p>
-                      <div className={styles.blogMeta}>
-                        <time className={styles.blogDate}>
-                          {formatDate(blog.createdAt)}
-                        </time>
-                      </div>
-                    </div>
-                    <Link 
-                      href={`/blog/${blog._id}`}
-                      className={styles.readMoreButton}
-                    >
-                      Read More
-                    </Link>
-                  </article>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+        <div className={styles.heroImage}>
+          <div className={styles.mockup}>
+            Exsolvia Dashboard
+          </div>
+        </div>
+
+      </section>
+
+      {/* Features */}
+      <section className={styles.features}>
+
+        <h2>Why Choose Exsolvia?</h2>
+
+        <div className={styles.featureGrid}>
+
+          <div className={styles.featureCard}>
+            <h3>Smart Hiring</h3>
+            <p>Manage applicants efficiently.</p>
+          </div>
+
+          <div className={styles.featureCard}>
+            <h3>Content System</h3>
+            <p>Publish blogs & updates.</p>
+          </div>
+
+          <div className={styles.featureCard}>
+            <h3>Team Workspace</h3>
+            <p>Collaborate in real-time.</p>
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* CTA */}
+      <section className={styles.cta}>
+        <h2>Get Started Today</h2>
+        <p>Join modern teams using Exsolvia.</p>
+
+        <button className={styles.primaryBtn}>
+          Create Account
+        </button>
+      </section>
+
+      {/* Footer */}
+      <footer className={styles.footer}>
+        © {new Date().getFullYear()} Exsolvia
+      </footer>
+
+    </main>
   );
 }
-
