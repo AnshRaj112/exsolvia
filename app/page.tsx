@@ -2,8 +2,8 @@ import Hero from "./components/hero";
 import About from "./components/about";
 import Products from "./components/products";
 import Innovations from "./components/innovations";
-import Team from "./components/team";
-import ApplyNow from "./components/applyNow";
+// import Team from "./components/team";
+// import ApplyNow from "./components/applyNow";
 import Image from "next/image";
 import heroImage from "../assets/hero-campus-tech.jpg";
 import styles from "./components/styles/comingSoon.module.scss";
@@ -15,8 +15,8 @@ function LandingContent() {
       <About />
       <Products />
       <Innovations />
-      <Team />
-      <ApplyNow />
+      {/* <Team />
+      <ApplyNow /> */}
     </>
   );
 }
