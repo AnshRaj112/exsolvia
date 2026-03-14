@@ -8,6 +8,6 @@
 
 html, body{
   background:black;
-  overflow-x:hidden;
+  overflow-x:clip;
   font-family:Arial, sans-serif;
 }
