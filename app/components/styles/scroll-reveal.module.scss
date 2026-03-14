@@ -1,0 +1,42 @@
+.container {
+  position: relative;
+  width: 100vw;
+  /* Extra height so we have room to scroll while the text is pinned */
+  height: 200vh;
+  background-color: #000; /* Assuming dark background based on hero */
+  color: #fff;
+}
+
+.stickyWrapper {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5vw;
+  overflow: hidden;
+}
+
+.textContainer {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 1200px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3em;
+}
+
+.word {
+  position: relative;
+  display: inline-block;
+}
+
+.char {
+  display: inline-block;
+  opacity: 0.1; /* Initial state, will be animated by framer-motion */
+}
