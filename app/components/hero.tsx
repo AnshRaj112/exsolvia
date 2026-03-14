@@ -3,7 +3,17 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './styles/hero.module.scss';
-import heroImage from '../../assets/hero-campus-tech.jpg';
+
+const images = [
+  "/img1.jpg",
+  "/img2.jpg",
+  "/img3.jpg",
+  "/img4.jpg",
+  "/img5.jpg",
+  "/img6.jpg",
+  "/img7.jpg",
+  "/img8.jpg"
+];
 
 const Hero: React.FC = () => {
   const handleLearnMoreClick = () => {
@@ -14,29 +24,44 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section className={styles.heroSection}>
-      <div className={styles.imageWrapper}>
-        <Image src={heroImage} alt="Collaborating team with laptop" fill priority className={styles.image} />
-        <div className={styles.overlay} />
-      </div>
+      <section className={styles.hero}>
 
-      <div className={styles.content}>
-        <h1 className={styles.title}>
-          Solving
-          <br />
-          Tomorrow, Today.
-        </h1>
-        <p className={styles.subtitle}>
-          EXSOLVIA builds solutions where others stop looking.
-        </p>
+        <div className={styles.rowsWrapper}>
 
-        <div className={styles.ctaRow}>
-          <button className={styles.secondaryButton} onClick={handleLearnMoreClick} aria-label="Learn more about EXSOLVIA">
-            Learn More
-          </button>
+          <div className={styles.row}>
+            {[...images, ...images].map((src, i) => (
+              <div key={i} className={styles.card}>
+                <Image src={src} alt="" fill className={styles.image}/>
+              </div>
+            ))}
+          </div>
+
+          <div className={`${styles.row} ${styles.middle}`}>
+            {[...images, ...images].map((src, i) => (
+              <div key={i} className={styles.card}>
+                <Image src={src} alt="" fill className={styles.image}/>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.row}>
+            {[...images, ...images].map((src, i) => (
+              <div key={i} className={styles.card}>
+                <Image src={src} alt="" fill className={styles.image}/>
+              </div>
+            ))}
+          </div>
+
         </div>
-      </div>
-    </section>
+
+        <div className={styles.overlay}></div>
+
+        <div className={styles.heroContent}>
+          <h1>Exsolvia</h1>
+          <p>scroll to discover</p>
+        </div>
+
+      </section>
   );
 };
 
