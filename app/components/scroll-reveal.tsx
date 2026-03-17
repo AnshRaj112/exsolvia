@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import styles from './styles/scroll-reveal.module.scss';
 
-const phrase = "Exsolvia is building products that serve humanity";
+const phrase = "Exsolvia is building products that serve humanity.";
 
 const Word = ({ children, progress, range }: { children: string, progress: MotionValue<number>, range: [number, number] }) => {
   // Map this specific word's scroll range
