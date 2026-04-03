@@ -1,11 +1,5 @@
-import Hero from "./components/hero";
-import ScrollReveal from "./components/scroll-reveal";
+import LandingPage from "./components/landing-page";
 
 export default function Home() {
-  return (
-    <main>
-      <Hero />
-      <ScrollReveal />
-    </main>
-  );
+  return <LandingPage />;
 }
