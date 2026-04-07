@@ -1,36 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PRODUCTS } from "../lib/products-data";
 import { MaterialIcon } from "./material-icon";
 
 const HERO_BG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAEj4KWDSvkRk-HtmEsGeBrLe_6q2WB0v4-jU2UspLsQl1CmDyld_wjF4wmFec9dhyw1bu7CRV0m0ncJMhTDeDllY-T7_F7FyU2MgAc5tcUyOKt94l5W7Y7DnE8q-PgbNbd1oygCDE0dLyqFFsD8hZ-hy6OlNQ4SnC4uVPxluO_cosWDgUaFhUqXZ0nphlVjjhusz7stIM7-kHNM5Y-GkCoEdh7qWpywvtDKAbfu0KV-T5d8bigNXhtGlbGucV-UTB0Bpuz73Pe0CE";
-
-const PIPELINE = [
-  {
-    title: "Project Helios",
-    tag: "Active",
-    tagStyle: "bg-secondary-container/20 text-primary-container",
-    desc: "Building the foundation for autonomous energy redistribution in smart cities.",
-    progress: "w-3/4",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC1QhlV5tnyeOEnaYlbPcsvFdKiVZt1qebNMDwT9m13KzMWoXXfHnez7-Y6gug0JUXXQeZLVhirG4dpCk_mlI1fFL18x8uUuQKNc6_P-oMImyyoMRzgkO2oEghW54iklML7fLA78tMI1ECdXLOvinvu_S0ebZCrn9tbc7zMg_j_JsETxabr1cEjkQAykafn7DrEKwEz2jfIH8etedHIq4LM_7S1rgWo1oR4QK6nSBr3PBQ6jQxAYYGuHwoa6EJZAouS46zP0-wMZbw",
-  },
-  {
-    title: "Quantum Mesh",
-    tag: "Alpha",
-    tagStyle: "bg-surface-container-highest text-neutral-400",
-    desc: "Revolutionary secure communication channels utilizing photonic entanglement.",
-    progress: "w-1/4",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAGlxAr0aGHKz9Um10a9QgnJLRVLmKoCx-dDskA3ju63HUHon71HkbQY3AiiBxIDrNA88oQZNzi9XsUPz__j0D5cqPmI-JURCbIOcfwWqkdEl1NZTNn8UA16ZX6Pq94wg1DznNoqD4v2gT2cgg5ffYiZEayAunhOWEcvfj_dS54BeaiKFiYFNr7ljW1cSjW6PDFUCBWTlDLBgey07egG3dIJ9qykMNvgOiKtVL7NvmF2q_WBWNYj__pi_1U-SoWYRvsdVzzg1fs128",
-  },
-  {
-    title: "Bio-Digital Bridge",
-    tag: "Research",
-    tagStyle: "bg-surface-container-highest text-neutral-400",
-    desc: "Interfacing neural biological data with silicon-based computing architectures.",
-    progress: "w-[10%]",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC7O6E6PzJ2z8qC5efUVgJST8ldEeU2_dz9JDTUC7RQIDvxMRu0iId1tTeH8AJtMJIo6VYCU3Cr04QLatCZstksj20m6Q1oeLTSzO_xG_1x4yhszKa2WYPWgDpxgSq_l88GIQ_KVv5IgV9c8gJNh7G5s3iLFM5FKDRt6crWa3butEQmRZEPLHd7_vDcJz_Ugh5bmjg8_RyFtdt_oRGX2cZgfKuQk6r-ZmefxvqpxJ3s6wY1Z-o31chdxw0uwfhjp4C8IaAAgrBkVwo",
-  },
-];
 
 export default function LandingPage() {
   return (
@@ -91,42 +65,56 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-            <div className="group relative overflow-hidden rounded-md bg-surface-container-low p-12 transition-all duration-500 hover:shadow-[0_0_40px_rgba(142,15,40,0.15)] md:col-span-8">
-              <div className="absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-primary-container/5 blur-[80px] transition-all duration-500 group-hover:bg-primary-container/10" />
-              <div className="relative z-10 flex h-full flex-col">
-                <MaterialIcon name="analytics" className="mb-6 text-4xl text-primary-container" />
-                <h3 className="mb-4 font-headline text-3xl font-bold">Neural Analytics Core</h3>
-                <p className="mb-8 max-w-md text-lg text-neutral-400">
-                  Real-time predictive modeling for enterprise-scale logistics and financial
-                  forecasting.
-                </p>
-                <Link
-                  href="/products"
-                  className="mt-auto flex items-center gap-2 font-headline font-bold text-primary-container group/btn"
-                >
-                  Learn More
+            {PRODUCTS.map((product, index) => (
+              <div
+                key={product.slug}
+                className={`group relative overflow-hidden rounded-md bg-surface-container-low p-12 transition-all duration-500 hover:shadow-[0_0_40px_rgba(142,15,40,0.15)] ${
+                  PRODUCTS.length === 1
+                    ? "md:col-span-8"
+                    : index === 0
+                      ? "md:col-span-8"
+                      : "md:col-span-4"
+                }`}
+              >
+                <div className="absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-primary-container/5 blur-[80px] transition-all duration-500 group-hover:bg-primary-container/10" />
+                <div className="relative z-10 flex h-full flex-col">
                   <MaterialIcon
-                    name="arrow_forward"
-                    className="text-sm transition-transform group-hover/btn:translate-x-1"
+                    name={product.materialIcon}
+                    className="mb-6 text-4xl text-primary-container"
                   />
-                </Link>
+                  <span className="mb-2 font-label text-xs uppercase tracking-wider text-primary">
+                    {product.tagline}
+                  </span>
+                  <h3 className="mb-4 font-headline text-3xl font-bold">{product.name}</h3>
+                  <p className="mb-8 max-w-md text-lg text-neutral-400">{product.shortDescription}</p>
+                  <Link
+                    href={`/products/${product.slug}`}
+                    className="mt-auto flex items-center gap-2 font-headline font-bold text-primary-container group/btn"
+                  >
+                    Learn More
+                    <MaterialIcon
+                      name="arrow_forward"
+                      className="text-sm transition-transform group-hover/btn:translate-x-1"
+                    />
+                  </Link>
+                </div>
               </div>
-            </div>
-            <div className="group rounded-md bg-surface-container-high p-8 transition-all duration-500 hover:bg-surface-bright md:col-span-4">
+            ))}
+            {/* <div className="group rounded-md bg-surface-container-high p-8 transition-all duration-500 hover:bg-surface-bright md:col-span-4">
               <MaterialIcon name="shield" className="mb-6 text-3xl text-primary-container" />
               <h3 className="mb-3 font-headline text-xl font-bold">Sentience Firewall</h3>
               <p className="text-neutral-400">
                 Autonomous threat detection that evolves alongside emerging digital vulnerabilities.
               </p>
-            </div>
-            <div className="group rounded-md bg-surface-container-high p-8 transition-all duration-500 hover:bg-surface-bright md:col-span-4">
+            </div> */}
+            {/* <div className="group rounded-md bg-surface-container-high p-8 transition-all duration-500 hover:bg-surface-bright md:col-span-4">
               <MaterialIcon name="terminal" className="mb-6 text-3xl text-primary-container" />
               <h3 className="mb-3 font-headline text-xl font-bold">Apex SDK</h3>
               <p className="text-neutral-400">
                 Low-latency development kits for high-frequency trading and algorithmic execution.
               </p>
-            </div>
-            <div className="group relative overflow-hidden rounded-md bg-surface-container-low p-12 transition-all duration-500 hover:shadow-[0_0_40px_rgba(142,15,40,0.15)] md:col-span-8">
+            </div> */}
+            {/* <div className="group relative overflow-hidden rounded-md bg-surface-container-low p-12 transition-all duration-500 hover:shadow-[0_0_40px_rgba(142,15,40,0.15)] md:col-span-8">
               <div className="absolute inset-0 opacity-20">
                 <Image
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZWoERY5xMKxET7EwijYZUb-JxpQvxf-2EIlpKcIgWbudgnNNbj9Yp5q8MpbSHLE2UBY0wNMFzbyzr3BKPlbQGTBb0Ml8CaqOHRLApYcynoap9IE8v1HenQv9q4fS5qDvgRglrE7Da1pdkSJ3ChAFgFBEKETiXtyjODKojkLHBvcvPi7RjBJsVKNPHBNNfNsGfYmsqUAfOKFsAiQC9mpzQ8eAhMhFiGm6dF8ifrFX_-1Go3paBCDz2NVfwUyL9TIKjdzWRkLqrro4"
@@ -142,12 +130,12 @@ export default function LandingPage() {
                   Decentralized compute resources that scale vertically with your ambitions.
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
 
-      <section className="overflow-hidden bg-surface-container-lowest py-24">
+      {/* <section className="overflow-hidden bg-surface-container-lowest py-24">
         <div className="mx-auto mb-16 max-w-7xl px-8">
           <span className="font-headline text-sm font-bold uppercase tracking-[0.2em] text-primary">
             Pipeline
@@ -188,7 +176,7 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <section className="bg-surface px-8 py-32">
         <div className="mx-auto max-w-4xl text-center">
@@ -295,12 +283,12 @@ export default function LandingPage() {
             <div className="space-y-6">
               <div className="flex items-center gap-4 text-neutral-300">
                 <MaterialIcon name="alternate_email" className="text-primary-container" />
-                <span>intelligence@exsolvia.io</span>
+                <span>contact@exsolvia.com</span>
               </div>
-              <div className="flex items-center gap-4 text-neutral-300">
+              {/* <div className="flex items-center gap-4 text-neutral-300">
                 <MaterialIcon name="location_on" className="text-primary-container" />
                 <span>Level 82, Obsidian Tower, Neo-City</span>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="rounded-md bg-surface-container-highest/30 p-10 backdrop-blur-sm">

@@ -17,7 +17,7 @@ export default function AboutPage() {
           <div className="grid items-start gap-12 md:grid-cols-2">
             <div className="space-y-6">
               <p className="text-lg font-light leading-relaxed text-on-surface-variant md:text-xl">
-                Exsolvia was born in the silent hours of 2018, not in a garage, but within a
+                Exsolvia was born in the silent hours of 2025, not in a garage, but within a
                 high-frequency compute cluster. Our founders recognized that the world&apos;s most
                 critical problems weren&apos;t lacking data—they were lacking the intelligence to
                 navigate through the noise.
@@ -171,7 +171,7 @@ export default function AboutPage() {
               href="/products"
               className="rounded-sm border border-outline-variant px-8 py-4 font-headline font-black text-ghost-white transition-all hover:bg-surface-bright active:scale-95"
             >
-              VIEW PROJECTS
+              VIEW PRODUCTS
             </Link>
           </div>
         </div>
