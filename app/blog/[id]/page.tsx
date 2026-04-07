@@ -1,119 +1,24 @@
-"use client";
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import styles from './blogDetail.module.scss';
-
-interface Blog {
-  _id: string;
-  title: string;
-  description: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import Link from "next/link";
+import { MaterialIcon } from "../../components/material-icon";
 
 export default function BlogDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
-  const [blog, setBlog] = useState<Blog | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (id) {
-      fetchBlog();
-    }
-  }, [id]);
-
-  const fetchBlog = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/blogs/${id}`);
-      const data = await response.json();
-
-      if (data.success) {
-        setBlog(data.data);
-        setError(null);
-      } else {
-        setError(data.error || 'Blog not found');
-      }
-    } catch (err) {
-      setError('Failed to fetch blog');
-      console.error('Error fetching blog:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className={styles.blogDetailPage}>
-        <div className={styles.container}>
-          <div className={styles.loading}>Loading blog...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !blog) {
-    return (
-      <div className={styles.blogDetailPage}>
-        <div className={styles.container}>
-          <div className={styles.error}>{error || 'Blog not found'}</div>
-          <Link href="/blog" className={styles.backLink}>
-            ← Back to Blog
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.blogDetailPage}>
-      <div className={styles.container}>
-        <Link href="/blog" className={styles.backLink}>
-          ← Back to Blog
+    <div className="min-h-screen px-8 pb-24 pt-8">
+      <div className="mx-auto max-w-3xl py-24 text-center">
+        <p className="mb-4 font-headline text-xl font-semibold text-white md:text-2xl">
+          No blogs available right now
+        </p>
+        <p className="mb-10 text-on-surface-variant">
+          This article is not available. Check back later for new posts.
+        </p>
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-2 font-headline font-bold text-primary underline-offset-4 hover:text-primary-container"
+        >
+          <MaterialIcon name="arrow_back" className="text-sm" />
+          Back to editorial
         </Link>
-
-        <article className={styles.blogArticle}>
-          <header className={styles.blogHeader}>
-            <h1 className={styles.blogTitle}>{blog.title}</h1>
-            <div className={styles.blogMeta}>
-              <time className={styles.blogDate}>
-                Published: {formatDate(blog.createdAt)}
-              </time>
-              {blog.updatedAt !== blog.createdAt && (
-                <time className={styles.blogDate}>
-                  Updated: {formatDate(blog.updatedAt)}
-                </time>
-              )}
-            </div>
-            {blog.description && (
-              <p className={styles.blogDescription}>{blog.description}</p>
-            )}
-          </header>
-
-          <div className={styles.blogContent}>
-            {blog.content.split('\n').map((paragraph, index) => (
-              <p key={index}>
-                {paragraph || '\u00A0'}
-              </p>
-            ))}
-          </div>
-        </article>
       </div>
     </div>
   );
 }
-
