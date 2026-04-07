@@ -60,6 +60,101 @@ export const TEAM: TeamMember[] = [
       "Driving reliability, automation, and performance across every release",
     ],
   },
+  {
+    slug: "aditi-guin",
+    name: "Aditi Guin",
+    role: "React Native Developer",
+    img: "https://res.cloudinary.com/dt45pu5mx/image/upload/v1767445109/ff55ebca-dd38-41f8-8c83-8ec6eb368b2d.png",
+    bio: "Specializing in building scalable and efficient React Native applications.",
+    longBio:
+      "Builds the user-facing interfaces of EXSOLVIA products, ensuring seamless and performant mobile experiences.",
+    linkedin: "https://www.linkedin.com/in/aditiguin/",
+    github: "https://github.com/GuinAditi",
+    projectCards: [
+      {
+        title: "KAMPYN",
+        blurb: "Campus dining, inventory, and ordering—unified for universities.",
+        href: "/products/kampyn",
+      },
+    ],
+    philosophy: "Build interfaces that feel like magic when they work, and like a miracle when they don't.",
+    operationalFocus: [
+      "Building and scaling user-facing interfaces for core products",
+      "Ensuring seamless and performant mobile experiences",
+      "Driving reliability, automation, and performance across every release",
+    ],
+  },
+  {
+    slug: "akshat-ojha",
+    name: "Akshat Ojha",
+    role: "Flutter Developer and Operations Incharge",
+    img: "https://res.cloudinary.com/dwogeda94/image/upload/v1753102683/107f37ce-7834-478e-b707-7111c77d2beb.png",
+    bio: "Specializing in building scalable and efficient Flutter applications.",
+    longBio:
+      "Develops the interfaces and infrastructure of EXSOLVIA products, ensuring seamless and performant mobile experiences.",
+    linkedin: "https://www.linkedin.com/in/akshat-ojha-300064372/",
+    github: "https://github.com/pilot32",
+    projectCards: [
+      {
+        title: "KAMPYN",
+        blurb: "Campus dining, inventory, and ordering—unified for universities.",
+        href: "/products/kampyn",
+      },
+    ],
+    philosophy: "Build interfaces that feel like magic when they work, and like a miracle when they don't.",
+    operationalFocus: [
+      "Building and scaling user-facing interfaces for core products",
+      "Ensuring seamless and performant mobile experiences",
+      "Driving reliability, automation, and performance across every release",
+    ],
+  },
+  {
+    slug: "ashmit-sinha",
+    name: "Ashmit Sinha",
+    role: "Frontend Developer",
+    img: "https://res.cloudinary.com/dt45pu5mx/image/upload/v1743003510/WhatsApp_Image_2025-03-26_at_21.07.58_a596d6c0_kyytfm.jpg",
+    bio: "Specializing in building scalable and efficient web applications.",
+    longBio:
+      "Develops the user-facing interfaces of EXSOLVIA products, ensuring seamless and performant web experiences.",
+    linkedin: "https://www.linkedin.com/in/ashmit-sinha-987a90319/",
+    github: "https://github.com/ashmit-sinha-30",
+    projectCards: [
+      {
+        title: "KAMPYN",
+        blurb: "Campus dining, inventory, and ordering—unified for universities.",
+        href: "/products/kampyn",
+      },
+    ],
+    philosophy: "Build interfaces that feel like magic when they work, and like a miracle when they don't.",
+    operationalFocus: [
+      "Building and scaling user-facing interfaces for core products",
+      "Ensuring seamless and performant web experiences",
+      "Driving reliability, automation, and performance across every release",
+    ],
+  },
+  {
+    slug: "prakul-pradyan",
+    name: "Prakul Pradyan",
+    role: "Data Analyst",
+    img: "https://res.cloudinary.com/dt45pu5mx/image/upload/v1764481598/ce925eb9-e16e-4a87-8d35-c3dad8c36ab4.png",
+    bio: "Specializing in analyzing and interpreting data to drive business decisions.",
+    longBio:
+      "Analyzes and interprets data to drive business decisions, ensuring data-driven product engineering.",
+    linkedin: "https://www.linkedin.com/in/prakul-pradyan-7750a7281/",
+    github: "https://github.com/prakul-pradyan",
+    projectCards: [
+      {
+        title: "KAMPYN",
+        blurb: "Campus dining, inventory, and ordering—unified for universities.",
+        href: "/products/kampyn",
+      },
+    ],
+    philosophy: "Data is the new oil — analyze it to fuel innovation.",
+    operationalFocus: [
+      "Analyzing and interpreting data to drive business decisions",
+      "Ensuring data-driven product engineering",
+    ],
+  },
   // {
   //   slug: "elena-vance",
   //   name: "Elena Vance",
