@@ -11,7 +11,7 @@ const NAV = [
   { href: "/team", label: "Team" },
   { href: "/blog", label: "Blog" },
   { href: "/careers", label: "Careers" },
-  { href: "/blog#build-in-public", label: "Build in Public" },
+  { href: "/build-in-public", label: "Build in Public" },
 ] as const;
 
 function navLinkClass(active: boolean) {

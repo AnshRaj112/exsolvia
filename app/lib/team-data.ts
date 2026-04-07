@@ -1,3 +1,11 @@
+export type TeamStat = { value: string; label: string };
+
+export type TeamProjectCard = {
+  title: string;
+  blurb: string;
+  href: string;
+};
+
 export type TeamMember = {
   slug: string;
   name: string;
@@ -5,36 +13,71 @@ export type TeamMember = {
   img: string;
   bio: string;
   longBio?: string;
+  linkedin?: string;
+  github?: string;
+  /** Shown directly under the bio */
+  stats?: TeamStat[];
+  /** Up to two cards, rendered below Operational Focus */
+  projectCards?: TeamProjectCard[];
+  /** Single line, shown after project cards */
+  philosophy?: string;
+  /** Bullet list under Operational Focus — unique per member */
+  operationalFocus: string[];
 };
 
 export const TEAM: TeamMember[] = [
   {
-    slug: "elias-thorne",
-    name: "Elias Thorne",
+    slug: "ansh-raj",
+    name: "Ansh Raj",
     role: "Founding Architect",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAJHDRETC3EKHlTJjgjhs0mNRQtNjrEWdWEAk9qjgFhR0OO7-N-lMmHYQae7nIO4K0kfwo69rr_f_c9gJ9ItGguP3eHsxUWWFW4EXmT44OKk7lWpamUhqWEaTaHV5Q7_0OgjrloMX-tGa44P7BTnZHMkFqpe9aofWqajN1okv_FuIIqvdKZipbJIBCmcASTbQYq9f3YSyA-t2waxQl5wanvsP-gXYtaTCL2cfouD6Bth7ekqOwBiPqlOlb9FkEYEADd2UUMAd0cQBs",
-    bio: "Specializing in recursive neural architectures and the implementation of obsidian monolith data structures.",
+    img: "https://res.cloudinary.com/dt45pu5mx/image/upload/v1767445097/photo_2026-01-02_12-19-43_cj9q29.jpg",
+    bio: "Specializing in scalable full-stack systems, intelligent automation workflows, and data-driven product engineering.",
     longBio:
-      "Elias leads the foundational architecture of EXSOLVIA neural systems, prioritizing recursive resilience and deterministic scaling.",
+      "Architects the core intelligence layer of EXSOLVIA systems, driving recursive resilience and deterministic scaling at every layer.",
+    linkedin: "https://www.linkedin.com/in/ansh-raj112",
+    github: "https://github.com/anshraj112",
+    stats: [
+      { value: "2+", label: "Years building" },
+      { value: "2", label: "Live products" },
+      { value: "∞", label: "Problems to solve" },
+    ],
+    projectCards: [
+      {
+        title: "KAMPYN",
+        blurb: "Campus dining, inventory, and ordering—unified for universities.",
+        href: "/products/kampyn",
+      },
+      {
+        title: "EXSOLVIA platform",
+        blurb: "The intelligence and automation backbone behind our product line.",
+        href: "/products",
+      },
+    ],
+    philosophy: "Ship systems that stay honest when everything else moves fast.",
+    operationalFocus: [
+      "Building and scaling core products from zero to production",
+      "Owning end-to-end development across backend, frontend, and infrastructure",
+      "Driving reliability, automation, and performance across every release",
+    ],
   },
-  {
-    slug: "elena-vance",
-    name: "Elena Vance",
-    role: "System Strategist",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBobiAN1vrqW6zLIhqMMgojeVdQHnEBLN5t73v69rj1fwebijw2NJcyLcYT6gJz_suD2SVTee_2yvdpIidOQZgf8OX-DOBXZj4Mn50fJGlvu8zptTTMb1ptqEy-0iIqHFc3vPMVCZMGbfIpfxSKCowYe8mnsdhQtbgVW1Oa3UMhMglbaocRLs63wkMPGt_m6YebmAYZzS2Hr4egBtKAXs63UzRf4Zayrxga_dnfVuYTxCzQcPRp6yxp_y6tHKZy4tlIplotu4kHnYE",
-    bio: "Pioneering global orchestration protocols and high-frequency deployment optimization for enterprise machines.",
-    longBio:
-      "Elena orchestrates global deployment strategies across enterprise clusters with zero tolerance for latency drift.",
-  },
-  {
-    slug: "marcus-kross",
-    name: "Marcus Kross",
-    role: "Lead Intelligence",
-    img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDG3TNTC9xRwgXpKmRZkvkKs7nnUxAJoiW-ndm8q4bESOIZQfP435xZfDvqUXcmTS95tC6NpqmMunrv1TKEAuqtkvz65Yoq59jWpy1E053mGVVuOXXQyveB2fw_hIdeCm5ectc0UpcMB8JitrsUEWwg9sOjWPx2ZbBZcLnxVMAYZavNYjZS7iqVMYDIYoSt9C4poOhWW_ZC2Rvm9K8Od_ILORu2_ipUuz-SNG2U-5PcCEArxQQjn4QuNrAGHpkzo1ZVRngl_obK0NY",
-    bio: "Engineering the semantic layers of the EXSOLVIA core, focusing on hyper-efficient data retrieval.",
-    longBio:
-      "Marcus drives semantic intelligence layers and retrieval performance for the EXSOLVIA core platform.",
-  },
+  // {
+  //   slug: "elena-vance",
+  //   name: "Elena Vance",
+  //   role: "System Strategist",
+  //   img: "https://res.cloudinary.com/dt45pu5mx/image/upload/v1767445097/photo_2026-01-02_12-19-43_cj9q29.jpg",
+  //   bio: "Pioneering global orchestration protocols and high-frequency deployment optimization for enterprise machines.",
+  //   longBio:
+  //     "Elena orchestrates global deployment strategies across enterprise clusters with zero tolerance for latency drift.",
+  // },
+  // {
+  //   slug: "marcus-kross",
+  //   name: "Marcus Kross",
+  //   role: "Lead Intelligence",
+  //   img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDG3TNTC9xRwgXpKmRZkvkKs7nnUxAJoiW-ndm8q4bESOIZQfP435xZfDvqUXcmTS95tC6NpqmMunrv1TKEAuqtkvz65Yoq59jWpy1E053mGVVuOXXQyveB2fw_hIdeCm5ectc0UpcMB8JitrsUEWwg9sOjWPx2ZbBZcLnxVMAYZavNYjZS7iqVMYDIYoSt9C4poOhWW_ZC2Rvm9K8Od_ILORu2_ipUuz-SNG2U-5PcCEArxQQjn4QuNrAGHpkzo1ZVRngl_obK0NY",
+  //   bio: "Engineering the semantic layers of the EXSOLVIA core, focusing on hyper-efficient data retrieval.",
+  //   longBio:
+  //     "Marcus drives semantic intelligence layers and retrieval performance for the EXSOLVIA core platform.",
+  // },
 ];
 
 export function getMember(slug: string) {

@@ -27,14 +27,6 @@ export default function SiteFooter() {
             </li>
             <li>
               <Link
-                href="/dashboard"
-                className="font-label text-xs uppercase tracking-widest text-neutral-500 transition-colors hover:text-red-400"
-              >
-                Projects
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/blog"
                 className="font-label text-xs uppercase tracking-widest text-neutral-500 transition-colors hover:text-red-400"
               >
