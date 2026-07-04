@@ -63,7 +63,7 @@ export default function SiteHeader() {
             <MaterialIcon name="contact_support" />
           </Link>
           <Link
-            href="/careers"
+            href="/careers/apply"
             className="rounded-sm bg-primary-container px-4 py-2 font-headline font-bold text-on-primary transition duration-200 ease-out hover:opacity-90 active:scale-95 sm:px-6"
           >
             Join Us

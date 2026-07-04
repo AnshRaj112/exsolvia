@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Application from '@/models/Application';
+import { requireAdminSession } from '@/lib/admin-auth';
+
+const MAX_MESSAGE = 2500;
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,26 +23,46 @@ export async function POST(request: NextRequest) {
       message,
     } = body;
 
-    // Validate required fields
-    if (!name || !email || !phone || !position || !resume) {
+    if (!name || !email || !position) {
       return NextResponse.json(
-        { success: false, error: 'Name, email, phone, position, and resume are required' },
+        { success: false, error: 'Name, email, and position are required' },
         { status: 400 }
       );
     }
 
-    // Create new application
+    const resumeStr = resume != null ? String(resume).trim() : '';
+    const portfolioStr = portfolio != null ? String(portfolio).trim() : '';
+    const linkedinStr = linkedin != null ? String(linkedin).trim() : '';
+
+    if (!resumeStr && !portfolioStr && !linkedinStr) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Provide at least one of: resume URL, portfolio URL, or LinkedIn profile',
+        },
+        { status: 400 }
+      );
+    }
+
+    const messageStr = message != null ? String(message) : '';
+    if (messageStr.length > MAX_MESSAGE) {
+      return NextResponse.json(
+        { success: false, error: `Message must be at most ${MAX_MESSAGE} characters` },
+        { status: 400 }
+      );
+    }
+
     const application = await Application.create({
-      name,
-      email,
-      phone,
-      position,
-      resume,
+      name: String(name).trim(),
+      email: String(email).trim().toLowerCase(),
+      phone: phone != null ? String(phone).trim() : '',
+      position: String(position).trim(),
+      resume: resumeStr || portfolioStr || linkedinStr,
       coverLetter,
-      portfolio,
-      linkedin,
-      github,
-      message,
+      portfolio: portfolioStr || undefined,
+      linkedin: linkedinStr || undefined,
+      github: github != null ? String(github).trim() : undefined,
+      message: messageStr || undefined,
       status: 'pending',
     });
 
@@ -59,11 +82,15 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = requireAdminSession(request);
+    if (!session) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     await connectDB();
     const applications = await Application.find({})
-      .sort({ createdAt: -1 }); // Most recent first
+      .sort({ createdAt: -1 });
     
     return NextResponse.json(
       { success: true, data: applications },
@@ -80,4 +107,3 @@ export async function GET() {
     );
   }
 }
-

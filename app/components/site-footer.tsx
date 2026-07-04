@@ -62,6 +62,14 @@ export default function SiteFooter() {
                 Careers
               </Link>
             </li>
+            <li>
+              <Link
+                href="/careers/apply"
+                className="font-label text-xs uppercase tracking-widest text-neutral-500 transition-colors hover:text-red-400"
+              >
+                Apply
+              </Link>
+            </li>
           </ul>
         </div>
         <div>

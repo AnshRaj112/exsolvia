@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Blog from '@/models/Blog';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET() {
   try {
@@ -26,10 +27,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = requireAdminSession(request);
+    if (!session) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     await connectDB();
     
     const body = await request.json();
-    const { title, description, content } = body;
+    const { title, description, content, imageUrl } = body;
 
     if (!title || !title.trim()) {
       return NextResponse.json(
@@ -56,6 +61,7 @@ export async function POST(request: NextRequest) {
       title: title.trim(),
       description: description.trim(),
       content: content.trim(),
+      imageUrl: imageUrl?.trim() || undefined,
     });
 
     return NextResponse.json(

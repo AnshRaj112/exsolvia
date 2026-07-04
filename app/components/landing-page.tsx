@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { PRODUCTS } from "../lib/products-data";
 import { MaterialIcon } from "./material-icon";
 
@@ -7,6 +10,47 @@ const HERO_BG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAEj4KWDSvkRk-HtmEsGeBrLe_6q2WB0v4-jU2UspLsQl1CmDyld_wjF4wmFec9dhyw1bu7CRV0m0ncJMhTDeDllY-T7_F7FyU2MgAc5tcUyOKt94l5W7Y7DnE8q-PgbNbd1oygCDE0dLyqFFsD8hZ-hy6OlNQ4SnC4uVPxluO_cosWDgUaFhUqXZ0nphlVjjhusz7stIM7-kHNM5Y-GkCoEdh7qWpywvtDKAbfu0KV-T5d8bigNXhtGlbGucV-UTB0Bpuz73Pe0CE";
 
 export default function LandingPage() {
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+  const [contactFeedback, setContactFeedback] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleLandingContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!contactForm.name.trim() || !contactForm.message.trim()) {
+      setContactFeedback({ ok: false, text: "Please enter your name and message." });
+      return;
+    }
+    try {
+      setIsSubmittingContact(true);
+      setContactFeedback(null);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message,
+          clearanceLevel: "Level 01: Public Access",
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setContactFeedback({ ok: false, text: data.error || "Failed to submit contact form." });
+        return;
+      }
+      setContactFeedback({ ok: true, text: "Protocol submitted. We will respond shortly." });
+      setContactForm({ name: "", email: "", message: "" });
+    } catch {
+      setContactFeedback({ ok: false, text: "Failed to submit contact form." });
+    } finally {
+      setIsSubmittingContact(false);
+    }
+  };
+
   return (
     <>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-20 hero-gradient">
@@ -40,7 +84,7 @@ export default function LandingPage() {
               Explore Products
             </Link>
             <Link
-              href="/careers"
+              href="/careers/apply"
               className="rounded-sm border border-surface-bright/40 px-10 py-5 font-headline text-lg font-bold text-on-background transition-all duration-300 hover:bg-surface-bright/10"
             >
               Join Us
@@ -292,7 +336,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="rounded-md bg-surface-container-highest/30 p-10 backdrop-blur-sm">
-            <div className="space-y-8">
+            <form className="space-y-8" onSubmit={handleLandingContactSubmit}>
               <div className="group">
                 <label className="font-label mb-2 block text-xs uppercase tracking-widest text-primary">
                   Identification
@@ -301,6 +345,9 @@ export default function LandingPage() {
                   className="w-full border-none border-b-2 border-transparent bg-surface-container-highest px-0 py-4 text-on-background placeholder:text-neutral-600 focus:border-primary-container focus:ring-0"
                   placeholder="Your Full Name"
                   type="text"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))}
+                  required
                 />
               </div>
               <div className="group">
@@ -311,6 +358,8 @@ export default function LandingPage() {
                   className="w-full border-none border-b-2 border-transparent bg-surface-container-highest px-0 py-4 text-on-background placeholder:text-neutral-600 focus:border-primary-container focus:ring-0"
                   placeholder="Email Address"
                   type="email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
                 />
               </div>
               <div className="group">
@@ -321,15 +370,24 @@ export default function LandingPage() {
                   className="w-full resize-none border-none border-b-2 border-transparent bg-surface-container-highest px-0 py-4 text-on-background placeholder:text-neutral-600 focus:border-primary-container focus:ring-0"
                   placeholder="Describe your project"
                   rows={4}
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))}
+                  required
                 />
               </div>
-              <Link
-                href="/contact"
+              {contactFeedback ? (
+                <p className={`text-sm ${contactFeedback.ok ? "text-emerald-300" : "text-red-300"}`}>
+                  {contactFeedback.text}
+                </p>
+              ) : null}
+              <button
+                type="submit"
+                disabled={isSubmittingContact}
                 className="block w-full rounded-sm bg-primary-container py-5 text-center font-headline font-bold text-on-primary transition-all hover:brightness-110 active:scale-95"
               >
-                Submit Protocol
-              </Link>
-            </div>
+                {isSubmittingContact ? "Submitting..." : "Submit Protocol"}
+              </button>
+            </form>
           </div>
         </div>
       </section>

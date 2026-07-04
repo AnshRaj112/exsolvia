@@ -1,7 +1,57 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { MaterialIcon } from "../components/material-icon";
 
 export default function ContactPage() {
+  const [form, setForm] = useState({
+    name: "",
+    organization: "",
+    clearanceLevel: "Level 01: Public Access",
+    message: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.message.trim()) {
+      setFeedback({ ok: false, text: "Please enter your name and message." });
+      return;
+    }
+    try {
+      setSubmitting(true);
+      setFeedback(null);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          organization: form.organization,
+          clearanceLevel: form.clearanceLevel,
+          message: form.message,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setFeedback({ ok: false, text: data.error || "Failed to transmit signal." });
+        return;
+      }
+      setFeedback({ ok: true, text: "Signal transmitted. Our team will reach out shortly." });
+      setForm({
+        name: "",
+        organization: "",
+        clearanceLevel: "Level 01: Public Access",
+        message: "",
+      });
+    } catch {
+      setFeedback({ ok: false, text: "Failed to transmit signal." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <main className="mx-auto max-w-7xl px-6 pb-24 pt-8">
       <header className="relative mb-20 text-center md:text-left">
@@ -20,7 +70,7 @@ export default function ContactPage() {
           <div className="absolute right-0 top-0 p-4 opacity-10">
             <MaterialIcon name="security" className="text-7xl" />
           </div>
-          <form className="relative z-10 space-y-8">
+          <form className="relative z-10 space-y-8" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <div className="space-y-2">
                 <label className="font-label text-xs font-medium uppercase tracking-widest text-on-surface-variant">
@@ -30,6 +80,9 @@ export default function ContactPage() {
                   className="w-full border-none border-b-2 border-surface-container-high bg-surface-container-lowest px-0 py-4 text-on-background transition-all placeholder:text-neutral-700 focus:border-primary-container focus:ring-0"
                   placeholder="Full Legal Identity"
                   type="text"
+                  value={form.name}
+                  onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -40,6 +93,8 @@ export default function ContactPage() {
                   className="w-full border-none border-b-2 border-surface-container-high bg-surface-container-lowest px-0 py-4 text-on-background transition-all placeholder:text-neutral-700 focus:border-primary-container focus:ring-0"
                   placeholder="Affiliated Entity"
                   type="text"
+                  value={form.organization}
+                  onChange={(e) => setForm((prev) => ({ ...prev, organization: e.target.value }))}
                 />
               </div>
             </div>
@@ -48,7 +103,11 @@ export default function ContactPage() {
                 Security Clearance level
               </label>
               <div className="relative">
-                <select className="w-full appearance-none border-none border-b-2 border-surface-container-high bg-surface-container-lowest px-0 py-4 text-on-background transition-all focus:border-primary-container focus:ring-0">
+                <select
+                  className="w-full appearance-none border-none border-b-2 border-surface-container-high bg-surface-container-lowest px-0 py-4 text-on-background transition-all focus:border-primary-container focus:ring-0"
+                  value={form.clearanceLevel}
+                  onChange={(e) => setForm((prev) => ({ ...prev, clearanceLevel: e.target.value }))}
+                >
                   <option>Level 01: Public Access</option>
                   <option>Level 02: Internal Research</option>
                   <option>Level 03: Administrative Oversight</option>
@@ -68,14 +127,23 @@ export default function ContactPage() {
                 className="w-full resize-none border-none border-b-2 border-surface-container-high bg-surface-container-lowest px-0 py-4 text-on-background transition-all placeholder:text-neutral-700 focus:border-primary-container focus:ring-0"
                 placeholder="Input transmission data here..."
                 rows={4}
+                value={form.message}
+                onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
+                required
               />
             </div>
+            {feedback ? (
+              <p className={`text-sm ${feedback.ok ? "text-emerald-300" : "text-red-300"}`}>
+                {feedback.text}
+              </p>
+            ) : null}
             <div className="pt-4">
               <button
-                type="button"
+                type="submit"
+                disabled={submitting}
                 className="group flex items-center gap-4 rounded-sm bg-primary-container px-10 py-5 font-headline font-black uppercase tracking-tighter text-on-primary transition-all hover:shadow-[0_0_30px_rgba(255,85,63,0.3)] active:scale-95"
               >
-                Transmit Signal
+                {submitting ? "Transmitting..." : "Transmit Signal"}
                 <MaterialIcon
                   name="arrow_forward"
                   className="transition-transform group-hover:translate-x-1"

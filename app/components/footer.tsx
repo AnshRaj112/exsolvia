@@ -51,6 +51,8 @@ const Footer: React.FC = () => {
             <Link href="/products" className={styles.footerLink}>Products</Link>
             <Link href="/team" className={styles.footerLink}>Team</Link>
             <Link href="/contact" className={styles.footerLink}>Contact</Link>
+            <Link href="/careers" className={styles.footerLink}>Careers</Link>
+            <Link href="/careers/apply" className={styles.footerLink}>Apply</Link>
           </div>
         </div>
 

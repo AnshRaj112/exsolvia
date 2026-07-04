@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Blog from '@/models/Blog';
+import { requireAdminSession } from '@/lib/admin-auth';
 
 export async function GET(
   request: NextRequest,
@@ -41,13 +42,17 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = requireAdminSession(request);
+    if (!session) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     await connectDB();
     
     const { id } = await params;
     const body = await request.json();
-    const { title, description, content } = body;
+    const { title, description, content, imageUrl } = body;
 
-    const updateData: { title?: string; description?: string; content?: string } = {};
+    const updateData: { title?: string; description?: string; content?: string; imageUrl?: string } = {};
     if (title !== undefined) {
       updateData.title = title.trim();
     }
@@ -56,6 +61,9 @@ export async function PATCH(
     }
     if (content !== undefined) {
       updateData.content = content.trim();
+    }
+    if (imageUrl !== undefined) {
+      updateData.imageUrl = imageUrl.trim();
     }
 
     const blog = await Blog.findByIdAndUpdate(
@@ -92,6 +100,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = requireAdminSession(request);
+    if (!session) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     await connectDB();
     
     const { id } = await params;

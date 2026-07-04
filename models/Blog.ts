@@ -4,6 +4,7 @@ export interface IBlog extends Document {
   title: string;
   description: string;
   content: string;
+  imageUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,6 +24,10 @@ const BlogSchema: Schema = new Schema(
     content: {
       type: String,
       required: [true, 'Content is required'],
+      trim: true,
+    },
+    imageUrl: {
+      type: String,
       trim: true,
     },
   },
