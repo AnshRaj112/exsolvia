@@ -5,6 +5,8 @@ import { getActivePositions, getPositionById } from "@/app/lib/positions";
 import { MaterialIcon } from "../../components/material-icon";
 import { CareersApplyForm } from "../components/careers-apply-form";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   searchParams: Promise<{ position?: string }>;
 };

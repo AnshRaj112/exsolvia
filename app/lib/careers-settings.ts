@@ -41,14 +41,19 @@ function toPublic(doc: {
 }
 
 export async function getCareersSettings(): Promise<PublicCareersSettings> {
-  await connectDB();
-  let doc = await CareersSettings.findOne({ singletonKey: "default" }).lean();
-  if (!doc) {
-    await CareersSettings.create({
-      singletonKey: "default",
-      ...CAREERS_DEFAULTS,
-    });
-    doc = await CareersSettings.findOne({ singletonKey: "default" }).lean();
+  try {
+    await connectDB();
+    let doc = await CareersSettings.findOne({ singletonKey: "default" }).lean();
+    if (!doc) {
+      await CareersSettings.create({
+        singletonKey: "default",
+        ...CAREERS_DEFAULTS,
+      });
+      doc = await CareersSettings.findOne({ singletonKey: "default" }).lean();
+    }
+    return toPublic(doc as Record<string, unknown>);
+  } catch (error) {
+    console.warn("Database connection failed in getCareersSettings, using defaults:", error);
+    return toPublic(CAREERS_DEFAULTS);
   }
-  return toPublic(doc as Record<string, unknown>);
 }

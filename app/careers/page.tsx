@@ -5,6 +5,8 @@ import { getActivePositions } from "@/app/lib/positions";
 import { MaterialIcon } from "../components/material-icon";
 import { CareersRolesList } from "./components/careers-roles-list";
 
+export const dynamic = "force-dynamic";
+
 export default async function CareersPage() {
   const [settings, positions] = await Promise.all([getCareersSettings(), getActivePositions()]);
   const missionCount = positions.length;

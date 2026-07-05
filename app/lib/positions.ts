@@ -32,22 +32,32 @@ function toPublic(p: {
 }
 
 export async function getActivePositions(): Promise<PublicPosition[]> {
-  await connectDB();
-  const docs = await Position.find({ isActive: true })
-    .sort({ createdAt: -1 })
-    .lean();
+  try {
+    await connectDB();
+    const docs = await Position.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .lean();
 
-  return docs.map((p) => toPublic(p));
+    return docs.map((p) => toPublic(p));
+  } catch (error) {
+    console.warn("Database connection failed in getActivePositions, returning empty list:", error);
+    return [];
+  }
 }
 
 export async function getPositionById(id: string): Promise<PublicPosition | null> {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return null;
   }
-  await connectDB();
-  const doc = await Position.findOne({ _id: id, isActive: true }).lean();
-  if (!doc) {
+  try {
+    await connectDB();
+    const doc = await Position.findOne({ _id: id, isActive: true }).lean();
+    if (!doc) {
+      return null;
+    }
+    return toPublic(doc);
+  } catch (error) {
+    console.warn(`Database connection failed in getPositionById for id ${id}:`, error);
     return null;
   }
-  return toPublic(doc);
 }
