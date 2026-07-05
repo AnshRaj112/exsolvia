@@ -1,78 +1,51 @@
-"use client";
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import styles from './blogDetail.module.scss';
+import Image from "next/image";
+import Link from "next/link";
+import { MaterialIcon } from "../../components/material-icon";
+import connectDB from "@/lib/mongodb";
+import BlogModel from "@/models/Blog";
 
-interface Blog {
+type BlogData = {
   _id: string;
   title: string;
   description: string;
   content: string;
+  imageUrl?: string;
   createdAt: string;
-  updatedAt: string;
-}
+};
 
-export default function BlogDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
-  const [blog, setBlog] = useState<Blog | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const FALLBACK_IMG =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuAmIx8DI5Ki8mAFNX0FIcbPSkZeP-dzeh4omzeRQPiSDj9haW-QFVj2Hidqrxn8-kzvd6G0QWguCxEGoRZ6Z9jIStmxyclBZK8GMfI4JxtbRMiIySc-1trwT-tSR1V_buYk3AMRk5etEKnYltn8Um-pQPl3nrp8bAXSmygvtV2lajmSeH06UI7Zemwfjix5ipVHVHdrQ9ym-Eh8XGn8CmWghUm3gWe-1NK_hKYCFi3d3YnIusgO2HOAN2rsT3vnDTvBcQv02vwBYVw";
 
-  useEffect(() => {
-    if (id) {
-      fetchBlog();
-    }
-  }, [id]);
+type Props = { params: Promise<{ id: string }> };
 
-  const fetchBlog = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/blogs/${id}`);
-      const data = await response.json();
+export default async function BlogDetailPage({ params }: Props) {
+  const { id } = await params;
+  let blog: BlogData | null = null;
 
-      if (data.success) {
-        setBlog(data.data);
-        setError(null);
-      } else {
-        setError(data.error || 'Blog not found');
-      }
-    } catch (err) {
-      setError('Failed to fetch blog');
-      console.error('Error fetching blog:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className={styles.blogDetailPage}>
-        <div className={styles.container}>
-          <div className={styles.loading}>Loading blog...</div>
-        </div>
-      </div>
-    );
+  try {
+    await connectDB();
+    const found = await BlogModel.findById(id).lean<BlogData | null>();
+    if (found) blog = found;
+  } catch {
+    blog = null;
   }
 
-  if (error || !blog) {
+  if (!blog) {
     return (
-      <div className={styles.blogDetailPage}>
-        <div className={styles.container}>
-          <div className={styles.error}>{error || 'Blog not found'}</div>
-          <Link href="/blog" className={styles.backLink}>
-            ← Back to Blog
+      <div className="min-h-screen px-8 pb-24 pt-8">
+        <div className="mx-auto max-w-3xl py-24 text-center">
+          <p className="mb-4 font-headline text-xl font-semibold text-white md:text-2xl">
+            No blogs available right now
+          </p>
+          <p className="mb-10 text-on-surface-variant">
+            This article is not available. Check back later for new posts.
+          </p>
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 font-headline font-bold text-primary underline-offset-4 hover:text-primary-container"
+          >
+            <MaterialIcon name="arrow_back" className="text-sm" />
+            Back to editorial
           </Link>
         </div>
       </div>
@@ -80,40 +53,40 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <div className={styles.blogDetailPage}>
-      <div className={styles.container}>
-        <Link href="/blog" className={styles.backLink}>
-          ← Back to Blog
-        </Link>
-
-        <article className={styles.blogArticle}>
-          <header className={styles.blogHeader}>
-            <h1 className={styles.blogTitle}>{blog.title}</h1>
-            <div className={styles.blogMeta}>
-              <time className={styles.blogDate}>
-                Published: {formatDate(blog.createdAt)}
-              </time>
-              {blog.updatedAt !== blog.createdAt && (
-                <time className={styles.blogDate}>
-                  Updated: {formatDate(blog.updatedAt)}
-                </time>
-              )}
-            </div>
-            {blog.description && (
-              <p className={styles.blogDescription}>{blog.description}</p>
-            )}
-          </header>
-
-          <div className={styles.blogContent}>
-            {blog.content.split('\n').map((paragraph, index) => (
-              <p key={index}>
-                {paragraph || '\u00A0'}
-              </p>
-            ))}
+    <article className="min-h-screen px-8 pb-24 pt-8">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-10 overflow-hidden rounded-md border border-outline-variant/15 bg-surface-container-low">
+          <div className="relative h-64 md:h-96">
+            <Image
+              src={blog.imageUrl || FALLBACK_IMG}
+              alt={blog.title}
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           </div>
-        </article>
+          <div className="p-8">
+            <h1 className="mb-4 font-headline text-4xl font-black tracking-tight text-white md:text-6xl">
+              {blog.title}
+            </h1>
+            <p className="text-lg text-on-surface-variant">{blog.description}</p>
+          </div>
+        </header>
+
+        <div className="prose prose-invert max-w-none whitespace-pre-wrap text-on-surface-variant">
+          {blog.content}
+        </div>
+
+        <Link
+          href="/blog"
+          className="mt-12 inline-flex items-center gap-2 font-headline font-bold text-primary underline-offset-4 hover:text-primary-container"
+        >
+          <MaterialIcon name="arrow_back" className="text-sm" />
+          Back to editorial
+        </Link>
       </div>
-    </div>
+    </article>
   );
 }
-

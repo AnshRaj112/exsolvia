@@ -1,0 +1,382 @@
+.adminPage {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  padding: 40px 0;
+  color: #e5e7eb;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+
+.container {
+  max-width: 1400px;
+  margin: auto;
+  padding: 0 24px;
+}
+
+
+
+.header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 22px;
+  border-radius: 10px;
+  color: #cbd5f5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.activeTab {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+  border: none;
+}
+
+
+
+.sectionHeader {
+  margin-bottom: 24px;
+
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+.sectionSubtitle {
+  opacity: 0.6;
+}
+
+
+
+.loading,
+.error,
+.emptyState {
+  text-align: center;
+  padding: 50px 0;
+  opacity: 0.7;
+}
+
+.error {
+  color: #f87171;
+}
+
+
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+
+.listContainer {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+
+
+
+.applicationList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.applicationCard {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.applicationCard:hover {
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+}
+
+.active {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px #6366f1;
+}
+
+
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.applicantName {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.applicantEmail,
+.applicantPosition,
+.applicantDate {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+
+
+.statusBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.statusPending {
+  background: #fde68a;
+  color: #78350f;
+}
+
+.statusReviewed {
+  background: #bae6fd;
+  color: #075985;
+}
+
+.statusInterview {
+  background: #c7d2fe;
+  color: #3730a3;
+}
+
+.statusOnboarding {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.statusRejected {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+
+
+.detailContainer {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.applicationDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 16px;
+}
+
+.detailTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+
+
+.detailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.detailText {
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+
+.link {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+
+.statusUpdateContainer {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.statusSelect {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+
+.addButton,
+.saveButton {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addButton:hover,
+.saveButton:hover {
+  opacity: 0.9;
+}
+
+.editButton {
+  background: #38bdf8;
+  color: #020617;
+}
+
+.deleteButton {
+  background: #ef4444;
+  color: white;
+}
+
+.cancelButton {
+  background: transparent;
+  border: 1px solid #1e293b;
+  color: #cbd5f5;
+}
+
+
+.formRow {
+  display: flex;
+  gap: 12px;
+}
+
+.positionInput,
+.blogInput,
+.blogTextarea {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+
+.positionsSection,
+.blogsSection {
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.positionsList,
+.blogsList {
+  display: grid;
+  gap: 20px;
+}
+
+
+.blogCard {
+  background: rgba(2, 6, 23, 0.9);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: 0.3s;
+}
+
+.blogCard:hover {
+  transform: translateY(-3px);
+  border-color: #38bdf8;
+}
+
+.blogCardTitle {
+  font-weight: 600;
+}
+
+.blogCardDescription {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.blogCardActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+
+@media (max-width: 768px) {
+  .adminPage {
+    padding: 20px 0;
+  }
+
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .detailContainer {
+    padding: 20px;
+  }
+}

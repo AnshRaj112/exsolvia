@@ -1,51 +1,78 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import styles from './styles/applyNow.module.scss';
+import React, { useEffect, useState } from "react";
+import styles from "./styles/applyNow.module.scss";
+import type { PublicPosition } from "@/app/lib/positions-types";
+import { publicPositionFromApi } from "@/app/lib/positions-types";
 
-interface Position {
-  _id: string;
-  title: string;
-  isActive: boolean;
-}
+type ApplyNowProps = {
+  /** When set (e.g. `/careers/apply?position=`), pre-selects that role in the form */
+  initialPositionId?: string;
+  /** From server: same list as /careers — avoids a second fetch and keeps data identical */
+  initialPositions?: PublicPosition[];
+  /** `embedded`: form only (used under PositionRolePanel). `page`: full apply block heading */
+  variant?: "page" | "embedded";
+};
 
-const ApplyNow: React.FC = () => {
+const ApplyNow: React.FC<ApplyNowProps> = ({
+  initialPositionId,
+  initialPositions,
+  variant = "page",
+}) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    position: '',
-    resume: '',
-    portfolio: '',
-    linkedin: '',
-    github: '',
-    message: '',
+    name: "",
+    email: "",
+    phone: "",
+    position: "",
+    resume: "",
+    portfolio: "",
+    linkedin: "",
+    github: "",
+    message: "",
   });
-  
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [loadingPositions, setLoadingPositions] = useState(true);
+
+  const [positions, setPositions] = useState<PublicPosition[]>(() => initialPositions ?? []);
+  const [loadingPositions, setLoadingPositions] = useState(() => initialPositions === undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
-    type: 'success' | 'error' | null;
+    type: "success" | "error" | null;
     message: string;
-  }>({ type: null, message: '' });
+  }>({ type: null, message: "" });
 
   useEffect(() => {
+    if (initialPositions !== undefined) {
+      setPositions(initialPositions);
+      setLoadingPositions(false);
+    }
+  }, [initialPositions]);
+
+  useEffect(() => {
+    if (initialPositions !== undefined) return;
     fetchPositions();
-  }, []);
+  }, [initialPositions]);
+
+  useEffect(() => {
+    if (!initialPositionId || positions.length === 0) return;
+    const match = positions.find((p) => p._id === initialPositionId);
+    if (match) {
+      setFormData((prev) => ({ ...prev, position: match.title }));
+    }
+  }, [initialPositionId, positions]);
 
   const fetchPositions = async () => {
     try {
       setLoadingPositions(true);
-      const response = await fetch('/api/positions');
+      const response = await fetch("/api/positions");
       const data = await response.json();
 
       if (data.success) {
-        setPositions(data.data);
+        setPositions(
+          (data.data as Record<string, unknown>[]).map((p) => publicPositionFromApi(p))
+        );
       } else {
-        console.error('Failed to load positions:', data.error);
+        console.error("Failed to load positions:", data.error);
       }
     } catch (err) {
-      console.error('Error fetching positions:', err);
+      console.error("Error fetching positions:", err);
     } finally {
       setLoadingPositions(false);
     }
@@ -64,13 +91,13 @@ const ApplyNow: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitStatus({ type: null, message: '' });
+    setSubmitStatus({ type: null, message: "" });
 
     try {
-      const response = await fetch('/api/applications', {
-        method: 'POST',
+      const response = await fetch("/api/applications", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -79,48 +106,58 @@ const ApplyNow: React.FC = () => {
 
       if (data.success) {
         setSubmitStatus({
-          type: 'success',
-          message: 'Application submitted successfully! We will get back to you soon.',
+          type: "success",
+          message: "Application submitted successfully! We will get back to you soon.",
         });
-        // Reset form
+        const keepTitle =
+          initialPositionId && positions.length > 0
+            ? positions.find((p) => p._id === initialPositionId)?.title ?? ""
+            : "";
         setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          position: '',
-          resume: '',
-          portfolio: '',
-          linkedin: '',
-          github: '',
-          message: '',
+          name: "",
+          email: "",
+          phone: "",
+          position: keepTitle,
+          resume: "",
+          portfolio: "",
+          linkedin: "",
+          github: "",
+          message: "",
         });
       } else {
         setSubmitStatus({
-          type: 'error',
-          message: data.error || 'Failed to submit application. Please try again.',
+          type: "error",
+          message: data.error || "Failed to submit application. Please try again.",
         });
       }
     } catch (error) {
       setSubmitStatus({
-        type: 'error',
-        message: 'An error occurred. Please try again later.',
+        type: "error",
+        message: "An error occurred. Please try again later.",
       });
-      console.error('Error submitting application:', error);
+      console.error("Error submitting application:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <section id="apply" className={styles.applySection}>
+    <section
+      id="apply"
+      className={`${styles.applySection} ${variant === "embedded" ? styles.embedded : ""}`}
+    >
       <div className={styles.container}>
-        <h1 className={styles.title}>
-          <span className={styles.titleBase}>Join </span>
-          <span className={styles.titleHighlight}>Our Team</span>
-        </h1>
-        <p className={styles.subtitle}>
-          Ready to be part of something amazing? Apply now and help us shape the future.
-        </p>
+        {variant === "page" && (
+          <>
+            <h1 className={styles.title}>
+              <span className={styles.titleBase}>Join </span>
+              <span className={styles.titleHighlight}>Our Team</span>
+            </h1>
+            <p className={styles.subtitle}>
+              Roles listed here match admin. Select one and submit your details.
+            </p>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
@@ -188,7 +225,7 @@ const ApplyNow: React.FC = () => {
                 disabled={loadingPositions}
               >
                 <option value="">
-                  {loadingPositions ? 'Loading positions...' : 'Select a position'}
+                  {loadingPositions ? "Loading positions..." : "Select a position"}
                 </option>
                 {positions.map((position) => (
                   <option key={position._id} value={position.title}>
@@ -217,7 +254,9 @@ const ApplyNow: React.FC = () => {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="portfolio" className={styles.label}>Portfolio URL</label>
+              <label htmlFor="portfolio" className={styles.label}>
+                Portfolio URL
+              </label>
               <input
                 type="url"
                 id="portfolio"
@@ -232,7 +271,9 @@ const ApplyNow: React.FC = () => {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="linkedin" className={styles.label}>LinkedIn Profile</label>
+              <label htmlFor="linkedin" className={styles.label}>
+                LinkedIn Profile
+              </label>
               <input
                 type="url"
                 id="linkedin"
@@ -245,7 +286,9 @@ const ApplyNow: React.FC = () => {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="github" className={styles.label}>GitHub Profile</label>
+              <label htmlFor="github" className={styles.label}>
+                GitHub Profile
+              </label>
               <input
                 type="url"
                 id="github"
@@ -259,7 +302,9 @@ const ApplyNow: React.FC = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="message" className={styles.label}>Additional Message</label>
+            <label htmlFor="message" className={styles.label}>
+              Additional Message
+            </label>
             <textarea
               id="message"
               name="message"
@@ -274,7 +319,7 @@ const ApplyNow: React.FC = () => {
           {submitStatus.type && (
             <div
               className={
-                submitStatus.type === 'success'
+                submitStatus.type === "success"
                   ? styles.successMessage
                   : styles.errorMessage
               }
@@ -288,7 +333,7 @@ const ApplyNow: React.FC = () => {
             disabled={isSubmitting}
             className={styles.submitButton}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Application'}
+            {isSubmitting ? "Submitting..." : "Submit Application"}
           </button>
         </form>
       </div>
@@ -297,4 +342,3 @@ const ApplyNow: React.FC = () => {
 };
 
 export default ApplyNow;
-

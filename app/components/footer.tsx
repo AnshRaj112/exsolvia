@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styles from './styles/footer.module.scss';
 
 const Footer: React.FC = () => {
@@ -46,10 +47,12 @@ const Footer: React.FC = () => {
         <div className={styles.quickLinks}>
           <h3 className={styles.sectionTitle}>Quick Links</h3>
           <div className={styles.linkList}>
-            <a href="/about" className={styles.footerLink}>About</a>
-            <a href="/products" className={styles.footerLink}>Products</a>
-            <a href="/team" className={styles.footerLink}>Team</a>
-            <a href="/contact" className={styles.footerLink}>Contact</a>
+            <Link href="/about" className={styles.footerLink}>About</Link>
+            <Link href="/products" className={styles.footerLink}>Products</Link>
+            <Link href="/team" className={styles.footerLink}>Team</Link>
+            <Link href="/contact" className={styles.footerLink}>Contact</Link>
+            <Link href="/careers" className={styles.footerLink}>Careers</Link>
+            <Link href="/careers/apply" className={styles.footerLink}>Apply</Link>
           </div>
         </div>
 

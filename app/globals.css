@@ -1,26 +1,216 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-error: #ffb4ab;
+  --color-on-primary-fixed-variant: #930300;
+  --color-background: #131313;
+  --color-on-background: #e5e2e1;
+  --color-on-tertiary-fixed: #40000a;
+  --color-inverse-primary: #c00500;
+  --color-on-primary-fixed: #410100;
+  --color-secondary-container: #8e0f28;
+  --color-error-container: #93000a;
+  --color-on-tertiary-fixed-variant: #920022;
+  --color-on-surface-variant: #ebbcb4;
+  --color-inverse-on-surface: #313030;
+  --color-secondary-fixed: #ffdada;
+  --color-on-error: #690005;
+  --color-on-primary: #680200;
+  --color-on-secondary: #680018;
+  --color-on-secondary-fixed-variant: #8e0f28;
+  --color-primary-fixed: #ffdad4;
+  --color-on-secondary-fixed: #40000b;
+  --color-surface-tint: #ffb4a8;
+  --color-primary-fixed-dim: #ffb4a8;
+  --color-tertiary-container: #ff5261;
+  --color-tertiary-fixed: #ffdad9;
+  --color-on-tertiary-container: #5b0012;
+  --color-outline-variant: #603e39;
+  --color-inverse-surface: #e5e2e1;
+  --color-secondary: #ffb3b5;
+  --color-primary: #ffb4a8;
+  --color-on-secondary-container: #ff989d;
+  --color-primary-container: #ff553f;
+  --color-surface-container: #201f1f;
+  --color-tertiary-fixed-dim: #ffb3b3;
+  --color-outline: #b18780;
+  --color-surface-container-highest: #353534;
+  --color-secondary-fixed-dim: #ffb3b5;
+  --color-surface-bright: #3a3939;
+  --color-surface-variant: #353534;
+  --color-surface-dim: #131313;
+  --color-on-surface: #e5e2e1;
+  --color-on-error-container: #ffdad6;
+  --color-surface: #131313;
+  --color-tertiary: #ffb3b3;
+  --color-surface-container-high: #2a2a2a;
+  --color-on-tertiary: #680015;
+  --color-on-primary-container: #5b0100;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-ghost-white: #f8f8ff;
+
+  --font-headline: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-label: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    color-scheme: dark;
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    font-family: var(--font-body);
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Design system: Space Grotesk for display/headlines, Inter for body (DESIGN.md) */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headline);
+    color: var(--color-on-surface);
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    color: inherit;
+  }
+
+  a:not([class]) {
+    color: var(--color-primary-fixed);
+    text-underline-offset: 4px;
+  }
+
+  a:not([class]):hover {
+    color: var(--color-primary-container);
+  }
+
+  ::selection {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Must override inherited font-body / font-headline from layout */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined", sans-serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga" 1;
+  -webkit-font-feature-settings: "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  user-select: none;
+}
+
+.glass-panel {
+  background: rgba(53, 53, 52, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.hero-gradient {
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 85, 63, 0.08) 0%,
+    rgba(19, 19, 19, 1) 70%
+  );
+}
+
+.obsidian-glow {
+  background: radial-gradient(
+    circle at top right,
+    rgba(255, 85, 63, 0.08),
+    transparent 70%
+  );
+}
+
+.card-hover-effect:hover {
+  box-shadow: 0 0 40px rgba(255, 8, 0, 0.1);
+}
+
+.red-glow {
+  box-shadow: 0 0 50px -12px rgba(255, 8, 0, 0.3);
+}
+
+.text-glow {
+  text-shadow: 0 0 15px rgba(255, 8, 0, 0.4);
+}
+
+.obsidian-gradient {
+  background: radial-gradient(
+    circle at top right,
+    rgba(255, 85, 63, 0.05),
+    transparent 60%
+  );
+}
+
+.bg-obsidian-gradient {
+  background: radial-gradient(
+    circle at top right,
+    rgba(255, 85, 63, 0.05) 0%,
+    rgba(19, 19, 19, 1) 100%
+  );
+}
+
+.glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(42, 42, 42, 0.4) 0%,
+    rgba(14, 14, 14, 0.6) 100%
+  );
+  backdrop-filter: blur(12px);
+}
+
+.glossy-glow {
+  background: radial-gradient(
+    circle at top right,
+    rgba(255, 85, 63, 0.05),
+    transparent 40%
+  );
+}
+
+.text-ghost-white {
+  color: var(--color-ghost-white);
+}
+
+.bg-obsidian {
+  background-color: #0e0e0e;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
