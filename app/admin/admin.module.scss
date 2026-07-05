@@ -1,22 +1,20 @@
-
 .adminPage {
   min-height: 100vh;
   background: radial-gradient(circle at top, #1a1a1a, #0b0b0b);
   padding: 40px 0;
-  color: #e5e7eb;
+  color: #c1c7d4;
   font-family: Inter, system-ui, sans-serif;
 }
 
-
-.container {
-  max-width: 1400px;
+.updatedcontainer {
+  max-width: 1450px;
   margin: auto;
   padding: 0 24px;
 }
 
 
 
-.header {
+.updatedheader {
   text-align: center;
   margin-bottom: 50px;
 }
@@ -25,7 +23,7 @@
   font-size: 2.8rem;
   font-weight: 800;
   background: linear-gradient(90deg, #ff7a61, #ff553f);
-  -webkit-background-clip: text;
+  // -webkit-background-clip: text;
   color: transparent;
 }
 
@@ -233,7 +231,7 @@
 }
 
 .sectionTitle {
-  font-size: 0.95rem;
+  font-size: 0.90rem;
   font-weight: 600;
   color: #ff7a61;
 }

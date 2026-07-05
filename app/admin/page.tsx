@@ -681,7 +681,7 @@ const AdminPage: React.FC = () => {
   if (authLoading) {
     return (
       <div className={styles.adminPage}>
-        <div className={styles.container}>
+        <div className={styles.updatedcontainer}>
           <div className={styles.loading}>Authenticating...</div>
         </div>
       </div>
@@ -690,8 +690,8 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className={styles.adminPage}>
-      <div className={styles.container}>
-        <header className={styles.header}>
+      <div className={styles.updatedcontainer}>
+        <header className={styles.updatedheader}>
           <h1 className={styles.title}>Admin Dashboard</h1>
           <p className={styles.subtitle}>
             Manage applications, contacts, positions, careers page copy, and content
