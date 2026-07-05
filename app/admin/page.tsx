@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './admin.module.scss';
+import styles from './adminpage.module.scss';
 
 interface Application {
   _id: string;
