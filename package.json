@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "argon2": "^0.44.0",
-    "mongoose": "^9.0.0",
-    "next": "15.5.22",
+    "mongoose": "^9.7.2",
+    "next": "16.2.12",
     "next-sitemap": "^4.2.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
