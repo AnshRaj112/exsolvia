@@ -2,12 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Position from '@/models/Position';
 import { requireAdminSession } from '@/lib/admin-auth';
-
-function parseCategory(input: unknown): 'engineering' | 'security' | 'operations' {
-  const s = String(input ?? 'engineering').toLowerCase();
-  if (s === 'security' || s === 'operations') return s;
-  return 'engineering';
-}
+import { parseCategory } from '@/app/lib/positions-types';
+import { parseMaterialIcon } from '@/app/lib/material-icons';
 
 function parseTags(input: unknown): string[] | undefined {
   if (input === undefined) return undefined;
@@ -69,11 +65,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const position = await Position.findByIdAndUpdate(
-      id,
-      { isActive: false },
-      { new: true }
-    );
+    const position = await Position.findByIdAndDelete(id);
 
     if (!position) {
       return NextResponse.json(
@@ -124,7 +116,7 @@ export async function PATCH(
       updateData.summary = String(summary).trim();
     }
     if (icon !== undefined) {
-      updateData.icon = String(icon).trim() || 'work';
+      updateData.icon = parseMaterialIcon(icon);
     }
     if (tags !== undefined) {
       const parsed = parseTags(tags);

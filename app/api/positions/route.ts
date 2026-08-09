@@ -2,12 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Position from '@/models/Position';
 import { getAdminSessionFromRequest, requireAdminSession } from '@/lib/admin-auth';
-
-function parseCategory(input: unknown): 'engineering' | 'security' | 'operations' {
-  const s = String(input ?? 'engineering').toLowerCase();
-  if (s === 'security' || s === 'operations') return s;
-  return 'engineering';
-}
+import { parseCategory } from '@/app/lib/positions-types';
+import { parseMaterialIcon } from '@/app/lib/material-icons';
 
 function parseTags(input: unknown): string[] {
   if (Array.isArray(input)) {
@@ -78,7 +74,8 @@ export async function POST(request: NextRequest) {
       if (!existingPosition.isActive) {
         existingPosition.isActive = true;
         existingPosition.summary = summary !== undefined ? String(summary).trim() : existingPosition.summary;
-        existingPosition.icon = icon !== undefined ? String(icon).trim() || 'work' : existingPosition.icon;
+        existingPosition.icon =
+          icon !== undefined ? parseMaterialIcon(icon) : existingPosition.icon;
         existingPosition.tags = tagList.length ? tagList : existingPosition.tags;
         existingPosition.description =
           description !== undefined ? String(description) : existingPosition.description;
@@ -101,7 +98,7 @@ export async function POST(request: NextRequest) {
       title: titleTrim,
       isActive: true,
       summary: summary !== undefined ? String(summary).trim() : '',
-      icon: icon !== undefined ? String(icon).trim() || 'work' : 'work',
+      icon: parseMaterialIcon(icon),
       tags: tagList,
       description: description !== undefined ? String(description) : '',
       category: parseCategory(category),

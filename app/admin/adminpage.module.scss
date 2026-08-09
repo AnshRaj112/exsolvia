@@ -337,6 +337,231 @@
   gap: 20px;
 }
 
+.addPositionForm {
+  margin-bottom: 28px;
+}
+
+.positionCreateForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.positionFullWidth {
+  grid-column: 1 / -1;
+}
+
+.fieldLabel {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.categoryField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.iconPicker {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+}
+
+.iconPickerOption {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: rgba(30, 41, 59, 0.45);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.iconPickerOption:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.iconPickerOptionSelected {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.18);
+  color: #e0e7ff;
+  box-shadow: 0 0 0 1px #6366f1;
+}
+
+.iconPickerGlyph {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.iconPickerLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  opacity: 0.85;
+}
+
+.iconPickerInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.positionCard {
+  background: rgba(2, 6, 23, 0.9);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.positionCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.positionInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.positionTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.positionBadgeActive,
+.positionBadgeInactive {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.positionBadgeActive {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.positionBadgeInactive {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.positionCardActions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.smallButton,
+.deleteButton,
+.cancelButton {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.smallButton {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+.smallButton:hover {
+  border-color: #38bdf8;
+}
+
+.positionDetailMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.metaWithIcon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metaIcon {
+  font-size: 1.1rem;
+  color: #38bdf8;
+}
+
+.positionSummary {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.positionDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.positionDescriptionPre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+.positionEmptyHint {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.55;
+  font-style: italic;
+}
 
 .blogCard {
   background: rgba(2, 6, 23, 0.9);

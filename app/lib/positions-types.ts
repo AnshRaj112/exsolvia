@@ -1,8 +1,12 @@
+import { parseMaterialIcon } from "@/app/lib/material-icons";
+
 /**
  * Public shape for careers + apply (mirrors admin Position fields).
  * Use this type anywhere UI reads role data — not ad-hoc duplicates.
  */
-export type PositionCategory = "engineering" | "security" | "operations";
+
+/** Admin-managed label; not a fixed enum. */
+export type PositionCategory = string;
 
 export type PublicPosition = {
   _id: string;
@@ -15,21 +19,61 @@ export type PublicPosition = {
   category: PositionCategory;
 };
 
+const LEGACY_CATEGORY_LABELS: Record<string, string> = {
+  engineering: "Engineering",
+  security: "Security",
+  operations: "Operations",
+};
+
+/** Case-insensitive identity for matching / deduping categories. */
+export function categoryKey(category: string): string {
+  return category.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+/** Sanitize category from API / form input. */
+export function parseCategory(input: unknown, fallback = "General"): string {
+  const raw = String(input ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 64);
+  return raw || fallback;
+}
+
+/** Display label (pretty-prints legacy slug values). */
+export function formatCategoryLabel(category: string): string {
+  const key = categoryKey(category);
+  if (LEGACY_CATEGORY_LABELS[key]) return LEGACY_CATEGORY_LABELS[key];
+  return category.trim();
+}
+
+/**
+ * Unique categories from a list, case-insensitive.
+ * Prefers a human label (legacy map or first non-empty casing seen).
+ */
+export function uniqueCategories(categories: Iterable<string>): string[] {
+  const seen = new Map<string, string>();
+  for (const c of categories) {
+    const parsed = parseCategory(c, "");
+    if (!parsed) continue;
+    const key = categoryKey(parsed);
+    if (seen.has(key)) continue;
+    seen.set(key, formatCategoryLabel(parsed));
+  }
+  return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
+}
+
 /** Normalize GET /api/positions JSON (public active list) to PublicPosition. */
 export function publicPositionFromApi(raw: Record<string, unknown>): PublicPosition {
   const tags = raw.tags;
-  const cat = String(raw.category ?? "engineering").toLowerCase();
-  const category: PositionCategory =
-    cat === "security" || cat === "operations" ? cat : "engineering";
   return {
     _id: String(raw._id ?? ""),
     title: String(raw.title ?? ""),
     summary: typeof raw.summary === "string" ? raw.summary : "",
-    icon: typeof raw.icon === "string" && raw.icon.trim() ? raw.icon.trim() : "work",
+    icon: parseMaterialIcon(raw.icon),
     tags: Array.isArray(tags) ? tags.map((t) => String(t)) : [],
     description: typeof raw.description === "string" ? raw.description : "",
     isActive: Boolean(raw.isActive),
-    category,
+    category: parseCategory(raw.category),
   };
 }
 
