@@ -11,7 +11,8 @@ export interface IPosition extends Document {
   tags: string[];
   /** Longer description for admin / future detail views */
   description: string;
-  category: 'engineering' | 'security' | 'operations';
+  /** Admin-managed filter label (free-form) */
+  category: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -46,11 +47,12 @@ const PositionSchema: Schema = new Schema(
       type: String,
       default: '',
     },
-    /** Filter bucket: Engineering / Security / Operations (careers UI) */
+    /** Careers filter bucket — created/reused by admin */
     category: {
       type: String,
-      enum: ['engineering', 'security', 'operations'],
-      default: 'engineering',
+      default: 'General',
+      trim: true,
+      maxlength: 64,
     },
   },
   {

@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Position from '@/models/Position';
 import { getAdminSessionFromRequest, requireAdminSession } from '@/lib/admin-auth';
-
-function parseCategory(input: unknown): 'engineering' | 'security' | 'operations' {
-  const s = String(input ?? 'engineering').toLowerCase();
-  if (s === 'security' || s === 'operations') return s;
-  return 'engineering';
-}
+import { parseCategory } from '@/app/lib/positions-types';
 
 function parseTags(input: unknown): string[] {
   if (Array.isArray(input)) {

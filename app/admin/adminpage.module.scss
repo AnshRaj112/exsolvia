@@ -337,6 +337,154 @@
   gap: 20px;
 }
 
+.addPositionForm {
+  margin-bottom: 28px;
+}
+
+.positionCreateForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.positionFullWidth {
+  grid-column: 1 / -1;
+}
+
+.categoryField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.positionCard {
+  background: rgba(2, 6, 23, 0.9);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.positionCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.positionInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.positionTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.positionBadgeActive,
+.positionBadgeInactive {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.positionBadgeActive {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.positionBadgeInactive {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.positionCardActions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.smallButton,
+.deleteButton,
+.cancelButton {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.smallButton {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+.smallButton:hover {
+  border-color: #38bdf8;
+}
+
+.positionDetailMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.positionSummary {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.positionDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.positionDescriptionPre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+.positionEmptyHint {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.55;
+  font-style: italic;
+}
 
 .blogCard {
   background: rgba(2, 6, 23, 0.9);
