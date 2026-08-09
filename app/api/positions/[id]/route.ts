@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import Position from '@/models/Position';
 import { requireAdminSession } from '@/lib/admin-auth';
 import { parseCategory } from '@/app/lib/positions-types';
+import { parseMaterialIcon } from '@/app/lib/material-icons';
 
 function parseTags(input: unknown): string[] | undefined {
   if (input === undefined) return undefined;
@@ -115,7 +116,7 @@ export async function PATCH(
       updateData.summary = String(summary).trim();
     }
     if (icon !== undefined) {
-      updateData.icon = String(icon).trim() || 'work';
+      updateData.icon = parseMaterialIcon(icon);
     }
     if (tags !== undefined) {
       const parsed = parseTags(tags);

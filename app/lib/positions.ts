@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import connectDB from "@/lib/mongodb";
 import Position from "@/models/Position";
 import { parseCategory, type PublicPosition } from "@/app/lib/positions-types";
+import { parseMaterialIcon } from "@/app/lib/material-icons";
 
 export type { PublicPosition } from "@/app/lib/positions-types";
 export { getPositionCardBody } from "@/app/lib/positions-types";
@@ -20,7 +21,7 @@ function toPublic(p: {
     _id: String(p._id),
     title: p.title,
     summary: p.summary ?? "",
-    icon: (p.icon ?? "").trim() || "work",
+    icon: parseMaterialIcon(p.icon),
     tags: Array.isArray(p.tags) ? p.tags : [],
     description: p.description ?? "",
     isActive: Boolean(p.isActive),

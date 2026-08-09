@@ -1,3 +1,5 @@
+import { parseMaterialIcon } from "@/app/lib/material-icons";
+
 /**
  * Public shape for careers + apply (mirrors admin Position fields).
  * Use this type anywhere UI reads role data — not ad-hoc duplicates.
@@ -67,7 +69,7 @@ export function publicPositionFromApi(raw: Record<string, unknown>): PublicPosit
     _id: String(raw._id ?? ""),
     title: String(raw.title ?? ""),
     summary: typeof raw.summary === "string" ? raw.summary : "",
-    icon: typeof raw.icon === "string" && raw.icon.trim() ? raw.icon.trim() : "work",
+    icon: parseMaterialIcon(raw.icon),
     tags: Array.isArray(tags) ? tags.map((t) => String(t)) : [],
     description: typeof raw.description === "string" ? raw.description : "",
     isActive: Boolean(raw.isActive),

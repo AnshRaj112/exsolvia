@@ -2,6 +2,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatCategoryLabel, uniqueCategories } from '@/app/lib/positions-types';
+import { DEFAULT_MATERIAL_ICON, parseMaterialIcon } from '@/app/lib/material-icons';
+import { MaterialIconPicker } from './components/material-icon-picker';
+import { MaterialIcon } from '@/app/components/material-icon';
 import styles from './adminpage.module.scss';
 
 interface Application {
@@ -80,7 +83,7 @@ const AdminPage: React.FC = () => {
   const [newPosition, setNewPosition] = useState({
     title: '',
     summary: '',
-    icon: 'work',
+    icon: DEFAULT_MATERIAL_ICON,
     tags: '',
     description: '',
     category: '',
@@ -91,7 +94,7 @@ const AdminPage: React.FC = () => {
   const [editPosition, setEditPosition] = useState({
     title: '',
     summary: '',
-    icon: 'work',
+    icon: DEFAULT_MATERIAL_ICON,
     tags: '',
     description: '',
     category: '',
@@ -400,7 +403,7 @@ const AdminPage: React.FC = () => {
         body: JSON.stringify({
           title: newPosition.title.trim(),
           summary: newPosition.summary.trim(),
-          icon: newPosition.icon.trim() || 'work',
+          icon: newPosition.icon,
           tags: newPosition.tags,
           description: newPosition.description,
           category: categoryValue,
@@ -413,7 +416,7 @@ const AdminPage: React.FC = () => {
         setNewPosition({
           title: '',
           summary: '',
-          icon: 'work',
+          icon: DEFAULT_MATERIAL_ICON,
           tags: '',
           description: '',
           category: '',
@@ -439,7 +442,7 @@ const AdminPage: React.FC = () => {
     setEditPosition({
       title: p.title,
       summary: p.summary || '',
-      icon: p.icon || 'work',
+      icon: parseMaterialIcon(p.icon),
       tags: (p.tags || []).join(', '),
       description: p.description || '',
       category: exists ? known.find((c) => c.toLowerCase() === label.toLowerCase()) || label : label,
@@ -465,7 +468,7 @@ const AdminPage: React.FC = () => {
         body: JSON.stringify({
           title: editPosition.title.trim(),
           summary: editPosition.summary.trim(),
-          icon: editPosition.icon.trim() || 'work',
+          icon: editPosition.icon,
           tags: editPosition.tags,
           description: editPosition.description,
           category: editPosition.category.trim(),
@@ -1117,17 +1120,18 @@ const AdminPage: React.FC = () => {
                       className={styles.positionInput}
                       placeholder={`Card ${idx + 1} title`}
                     />
-                    <input
-                      type="text"
-                      value={card.icon}
-                      onChange={(e) => {
-                        const next = [...careersForm.cultureCards];
-                        next[idx] = { ...next[idx], icon: e.target.value };
-                        setCareersForm((s) => ({ ...s, cultureCards: next }));
-                      }}
-                      className={styles.positionInput}
-                      placeholder="Material icon name"
-                    />
+                    <div className={styles.positionFullWidth}>
+                      <p className={styles.fieldLabel}>Icon</p>
+                      <MaterialIconPicker
+                        name={`culture-card-icon-${idx}`}
+                        value={parseMaterialIcon(card.icon)}
+                        onChange={(icon) => {
+                          const next = [...careersForm.cultureCards];
+                          next[idx] = { ...next[idx], icon };
+                          setCareersForm((s) => ({ ...s, cultureCards: next }));
+                        }}
+                      />
+                    </div>
                     <textarea
                       value={card.description}
                       onChange={(e) => {
@@ -1135,7 +1139,7 @@ const AdminPage: React.FC = () => {
                         next[idx] = { ...next[idx], description: e.target.value };
                         setCareersForm((s) => ({ ...s, cultureCards: next }));
                       }}
-                      className={styles.blogTextarea}
+                      className={`${styles.blogTextarea} ${styles.positionFullWidth}`}
                       rows={3}
                       placeholder="Description"
                     />
@@ -1258,18 +1262,19 @@ const AdminPage: React.FC = () => {
                   </div>
                   <input
                     type="text"
-                    value={newPosition.icon}
-                    onChange={(e) => setNewPosition((s) => ({ ...s, icon: e.target.value }))}
-                    placeholder="Material icon name (default: work)"
-                    className={styles.positionInput}
-                  />
-                  <input
-                    type="text"
                     value={newPosition.tags}
                     onChange={(e) => setNewPosition((s) => ({ ...s, tags: e.target.value }))}
                     placeholder="Tags, comma-separated (e.g., Core Engineering, Remote)"
                     className={`${styles.positionInput} ${styles.positionFullWidth}`}
                   />
+                  <div className={styles.positionFullWidth}>
+                    <p className={styles.fieldLabel}>Icon</p>
+                    <MaterialIconPicker
+                      name="new-position-icon"
+                      value={newPosition.icon}
+                      onChange={(icon) => setNewPosition((s) => ({ ...s, icon }))}
+                    />
+                  </div>
                   <textarea
                     value={newPosition.summary}
                     onChange={(e) => setNewPosition((s) => ({ ...s, summary: e.target.value }))}
@@ -1364,15 +1369,14 @@ const AdminPage: React.FC = () => {
                                   />
                                 ) : null}
                               </div>
-                              <input
-                                type="text"
-                                value={editPosition.icon}
-                                onChange={(e) =>
-                                  setEditPosition((s) => ({ ...s, icon: e.target.value }))
-                                }
-                                placeholder="Icon name"
-                                className={styles.positionInput}
-                              />
+                              <div className={styles.positionFullWidth}>
+                                <p className={styles.fieldLabel}>Icon</p>
+                                <MaterialIconPicker
+                                  name={`edit-position-icon-${position._id}`}
+                                  value={editPosition.icon}
+                                  onChange={(icon) => setEditPosition((s) => ({ ...s, icon }))}
+                                />
+                              </div>
                               <input
                                 type="text"
                                 value={editPosition.tags}
@@ -1456,8 +1460,13 @@ const AdminPage: React.FC = () => {
                                 <strong>Category:</strong>{' '}
                                 {formatCategoryLabel(position.category || 'General')}
                               </span>
-                              <span>
-                                <strong>Icon:</strong> {position.icon || 'work'}
+                              <span className={styles.metaWithIcon}>
+                                <strong>Icon:</strong>{' '}
+                                <MaterialIcon
+                                  name={parseMaterialIcon(position.icon)}
+                                  className={styles.metaIcon}
+                                />
+                                {parseMaterialIcon(position.icon)}
                               </span>
                               <span>
                                 <strong>Tags:</strong>{' '}
