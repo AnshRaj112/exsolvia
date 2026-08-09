@@ -2,27 +2,42 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { PositionCategory, PublicPosition } from "@/app/lib/positions-types";
+import {
+  categoryKey,
+  uniqueCategories,
+  type PublicPosition,
+} from "@/app/lib/positions-types";
 import { MaterialIcon } from "@/app/components/material-icon";
 
-const FILTERS: { id: PositionCategory | "all"; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "engineering", label: "Engineering" },
-  { id: "security", label: "Security" },
-  { id: "operations", label: "Operations" },
-];
+type FilterId = "all" | string;
 
 type Props = {
   positions: PublicPosition[];
 };
 
+/** Build All + category chips from active positions only (no empty categories). */
+function filtersFromPositions(positions: PublicPosition[]): { id: FilterId; label: string }[] {
+  return [
+    { id: "all", label: "All" },
+    ...uniqueCategories(positions.map((p) => p.category)).map((label) => ({
+      id: categoryKey(label),
+      label,
+    })),
+  ];
+}
+
 export function CareersRolesList({ positions }: Props) {
-  const [active, setActive] = useState<PositionCategory | "all">("all");
+  const [active, setActive] = useState<FilterId>("all");
+
+  const filters = useMemo(() => filtersFromPositions(positions), [positions]);
+
+  const effectiveActive: FilterId =
+    active === "all" || filters.some((f) => f.id === active) ? active : "all";
 
   const filtered = useMemo(() => {
-    if (active === "all") return positions;
-    return positions.filter((p) => p.category === active);
-  }, [positions, active]);
+    if (effectiveActive === "all") return positions;
+    return positions.filter((p) => categoryKey(p.category) === effectiveActive);
+  }, [positions, effectiveActive]);
 
   return (
     <section className="px-8 py-32">
@@ -37,13 +52,13 @@ export function CareersRolesList({ positions }: Props) {
             </p>
           </div>
           <div className="flex flex-wrap justify-end gap-2 md:gap-4">
-            {FILTERS.map((f) => (
+            {filters.map((f) => (
               <button
                 key={f.id}
                 type="button"
                 onClick={() => setActive(f.id)}
                 className={`border px-4 py-2 font-headline text-xs font-bold uppercase tracking-widest transition-colors ${
-                  active === f.id
+                  effectiveActive === f.id
                     ? "border-primary-container bg-primary-container/10 text-primary-container"
                     : "border-outline-variant/30 text-on-surface-variant hover:border-primary-container"
                 }`}

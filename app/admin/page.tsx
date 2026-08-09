@@ -1,6 +1,10 @@
 "use client";
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatCategoryLabel, uniqueCategories } from '@/app/lib/positions-types';
+import { DEFAULT_MATERIAL_ICON, parseMaterialIcon } from '@/app/lib/material-icons';
+import { MaterialIconPicker } from './components/material-icon-picker';
+import { MaterialIcon } from '@/app/components/material-icon';
 import styles from './adminpage.module.scss';
 
 interface Application {
@@ -28,7 +32,7 @@ interface Position {
   icon?: string;
   tags?: string[];
   description?: string;
-  category?: 'engineering' | 'security' | 'operations';
+  category?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -79,22 +83,39 @@ const AdminPage: React.FC = () => {
   const [newPosition, setNewPosition] = useState({
     title: '',
     summary: '',
-    icon: 'work',
+    icon: DEFAULT_MATERIAL_ICON,
     tags: '',
     description: '',
-    category: 'engineering' as 'engineering' | 'security' | 'operations',
+    category: '',
   });
+  const [newCategoryMode, setNewCategoryMode] = useState<'existing' | 'new'>('existing');
   const [addingPosition, setAddingPosition] = useState(false);
   const [editingPositionId, setEditingPositionId] = useState<string | null>(null);
   const [editPosition, setEditPosition] = useState({
     title: '',
     summary: '',
-    icon: 'work',
+    icon: DEFAULT_MATERIAL_ICON,
     tags: '',
     description: '',
-    category: 'engineering' as 'engineering' | 'security' | 'operations',
+    category: '',
   });
+  const [editCategoryMode, setEditCategoryMode] = useState<'existing' | 'new'>('existing');
   const [savingPosition, setSavingPosition] = useState(false);
+
+  const positionCategories = useMemo(
+    () => uniqueCategories(positions.map((p) => p.category || '')),
+    [positions]
+  );
+
+  useEffect(() => {
+    if (positionCategories.length === 0) {
+      setNewCategoryMode('new');
+      return;
+    }
+    if (newCategoryMode === 'existing' && !newPosition.category.trim()) {
+      setNewPosition((s) => ({ ...s, category: positionCategories[0] }));
+    }
+  }, [positionCategories, newCategoryMode, newPosition.category]);
 
   const [careersForm, setCareersForm] = useState({
     heroSubtext: '',
@@ -367,10 +388,12 @@ const AdminPage: React.FC = () => {
 
   const handleAddPosition = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPosition.title.trim()) return;
+    const categoryValue = newPosition.category.trim();
+    if (!newPosition.title.trim() || !categoryValue) return;
 
     try {
       setAddingPosition(true);
+      setPositionsError(null);
       const response = await fetch('/api/positions', {
         method: 'POST',
         headers: {
@@ -380,10 +403,10 @@ const AdminPage: React.FC = () => {
         body: JSON.stringify({
           title: newPosition.title.trim(),
           summary: newPosition.summary.trim(),
-          icon: newPosition.icon.trim() || 'work',
+          icon: newPosition.icon,
           tags: newPosition.tags,
           description: newPosition.description,
-          category: newPosition.category,
+          category: categoryValue,
         }),
       });
 
@@ -393,11 +416,12 @@ const AdminPage: React.FC = () => {
         setNewPosition({
           title: '',
           summary: '',
-          icon: 'work',
+          icon: DEFAULT_MATERIAL_ICON,
           tags: '',
           description: '',
-          category: 'engineering',
+          category: '',
         });
+        setNewCategoryMode(positionCategories.length > 0 ? 'existing' : 'new');
         await fetchPositions();
       } else {
         setPositionsError(data.error || 'Failed to add position');
@@ -411,24 +435,29 @@ const AdminPage: React.FC = () => {
   };
 
   const startEditPosition = (p: Position) => {
+    const label = formatCategoryLabel(p.category || '');
+    const known = uniqueCategories([...(positions.map((x) => x.category || '')), p.category || '']);
+    const exists = known.some((c) => c.toLowerCase() === label.toLowerCase());
     setEditingPositionId(p._id);
     setEditPosition({
       title: p.title,
       summary: p.summary || '',
-      icon: p.icon || 'work',
+      icon: parseMaterialIcon(p.icon),
       tags: (p.tags || []).join(', '),
       description: p.description || '',
-      category: p.category || 'engineering',
+      category: exists ? known.find((c) => c.toLowerCase() === label.toLowerCase()) || label : label,
     });
+    setEditCategoryMode(exists ? 'existing' : 'new');
   };
 
   const cancelEditPosition = () => {
     setEditingPositionId(null);
+    setEditCategoryMode('existing');
   };
 
   const handleSaveEditPosition = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingPositionId || !editPosition.title.trim()) return;
+    if (!editingPositionId || !editPosition.title.trim() || !editPosition.category.trim()) return;
 
     try {
       setSavingPosition(true);
@@ -439,10 +468,10 @@ const AdminPage: React.FC = () => {
         body: JSON.stringify({
           title: editPosition.title.trim(),
           summary: editPosition.summary.trim(),
-          icon: editPosition.icon.trim() || 'work',
+          icon: editPosition.icon,
           tags: editPosition.tags,
           description: editPosition.description,
-          category: editPosition.category,
+          category: editPosition.category.trim(),
         }),
       });
 
@@ -463,11 +492,16 @@ const AdminPage: React.FC = () => {
   };
 
   const handleDeletePosition = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this position? It will no longer appear on the careers page or application form.')) {
+    if (
+      !confirm(
+        'Delete this position permanently? It will be removed from the admin list and the careers page.'
+      )
+    ) {
       return;
     }
 
     try {
+      setPositionsError(null);
       const response = await fetch(`/api/positions/${id}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -475,17 +509,23 @@ const AdminPage: React.FC = () => {
 
       const data = await response.json();
 
+      if (response.status === 401) {
+        router.replace('/admin/login');
+        return;
+      }
+
       if (data.success) {
         if (editingPositionId === id) {
           setEditingPositionId(null);
         }
+        setPositions((prev) => prev.filter((p) => p._id !== id));
         await fetchPositions();
       } else {
-        setPositionsError(data.error || 'Failed to remove position');
+        setPositionsError(data.error || 'Failed to delete position');
       }
     } catch (err) {
-      setPositionsError('Failed to remove position');
-      console.error('Error removing position:', err);
+      setPositionsError('Failed to delete position');
+      console.error('Error deleting position:', err);
     }
   };
 
@@ -1037,7 +1077,7 @@ const AdminPage: React.FC = () => {
               <h2>Careers page (public)</h2>
               <p className={styles.sectionSubtitle}>
                 Hero copy, culture cards, monolith CTA, and apply phase label. Position rows and filters use the
-                Positions tab (category: Engineering / Security / Operations).
+                Positions tab (pick an existing category or Add new…).
               </p>
             </div>
             {careersError && <div className={styles.error}>{careersError}</div>}
@@ -1080,17 +1120,18 @@ const AdminPage: React.FC = () => {
                       className={styles.positionInput}
                       placeholder={`Card ${idx + 1} title`}
                     />
-                    <input
-                      type="text"
-                      value={card.icon}
-                      onChange={(e) => {
-                        const next = [...careersForm.cultureCards];
-                        next[idx] = { ...next[idx], icon: e.target.value };
-                        setCareersForm((s) => ({ ...s, cultureCards: next }));
-                      }}
-                      className={styles.positionInput}
-                      placeholder="Material icon name"
-                    />
+                    <div className={styles.positionFullWidth}>
+                      <p className={styles.fieldLabel}>Icon</p>
+                      <MaterialIconPicker
+                        name={`culture-card-icon-${idx}`}
+                        value={parseMaterialIcon(card.icon)}
+                        onChange={(icon) => {
+                          const next = [...careersForm.cultureCards];
+                          next[idx] = { ...next[idx], icon };
+                          setCareersForm((s) => ({ ...s, cultureCards: next }));
+                        }}
+                      />
+                    </div>
                     <textarea
                       value={card.description}
                       onChange={(e) => {
@@ -1098,7 +1139,7 @@ const AdminPage: React.FC = () => {
                         next[idx] = { ...next[idx], description: e.target.value };
                         setCareersForm((s) => ({ ...s, cultureCards: next }));
                       }}
-                      className={styles.blogTextarea}
+                      className={`${styles.blogTextarea} ${styles.positionFullWidth}`}
                       rows={3}
                       placeholder="Description"
                     />
@@ -1155,7 +1196,7 @@ const AdminPage: React.FC = () => {
               <h2>Manage Available Positions</h2>
               <p className={styles.sectionSubtitle}>
                 Create roles with the same fields shown on the careers page (summary, tags, icon, description).
-                Active roles appear publicly; removed roles are deactivated but stay listed here.
+                Pick an existing category or choose Add new…. Delete removes a role permanently from admin and careers.
               </p>
             </div>
 
@@ -1174,27 +1215,51 @@ const AdminPage: React.FC = () => {
                     className={styles.positionInput}
                     required
                   />
-                  <select
-                    value={newPosition.category}
-                    onChange={(e) =>
-                      setNewPosition((s) => ({
-                        ...s,
-                        category: e.target.value as 'engineering' | 'security' | 'operations',
-                      }))
-                    }
-                    className={styles.positionInput}
-                  >
-                    <option value="engineering">Category: Engineering</option>
-                    <option value="security">Category: Security</option>
-                    <option value="operations">Category: Operations</option>
-                  </select>
-                  <input
-                    type="text"
-                    value={newPosition.icon}
-                    onChange={(e) => setNewPosition((s) => ({ ...s, icon: e.target.value }))}
-                    placeholder="Material icon name (default: work)"
-                    className={styles.positionInput}
-                  />
+                  <div className={styles.categoryField}>
+                    <select
+                      value={
+                        newCategoryMode === 'new'
+                          ? '__new__'
+                          : newPosition.category || positionCategories[0] || '__new__'
+                      }
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v === '__new__') {
+                          setNewCategoryMode('new');
+                          setNewPosition((s) => ({ ...s, category: '' }));
+                          return;
+                        }
+                        setNewCategoryMode('existing');
+                        setNewPosition((s) => ({ ...s, category: v }));
+                      }}
+                      className={styles.positionInput}
+                      required={newCategoryMode === 'existing'}
+                    >
+                      {positionCategories.length === 0 ? (
+                        <option value="__new__">Add new…</option>
+                      ) : (
+                        <>
+                          {positionCategories.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
+                          ))}
+                          <option value="__new__">Add new…</option>
+                        </>
+                      )}
+                    </select>
+                    {newCategoryMode === 'new' ? (
+                      <input
+                        type="text"
+                        value={newPosition.category}
+                        onChange={(e) => setNewPosition((s) => ({ ...s, category: e.target.value }))}
+                        placeholder="New category name"
+                        className={styles.positionInput}
+                        required
+                        maxLength={64}
+                      />
+                    ) : null}
+                  </div>
                   <input
                     type="text"
                     value={newPosition.tags}
@@ -1202,25 +1267,33 @@ const AdminPage: React.FC = () => {
                     placeholder="Tags, comma-separated (e.g., Core Engineering, Remote)"
                     className={`${styles.positionInput} ${styles.positionFullWidth}`}
                   />
+                  <div className={styles.positionFullWidth}>
+                    <p className={styles.fieldLabel}>Icon</p>
+                    <MaterialIconPicker
+                      name="new-position-icon"
+                      value={newPosition.icon}
+                      onChange={(icon) => setNewPosition((s) => ({ ...s, icon }))}
+                    />
+                  </div>
                   <textarea
                     value={newPosition.summary}
                     onChange={(e) => setNewPosition((s) => ({ ...s, summary: e.target.value }))}
                     placeholder="Short summary for the careers card"
-                    className={styles.blogTextarea}
+                    className={`${styles.blogTextarea} ${styles.positionFullWidth}`}
                     rows={3}
                   />
                   <textarea
                     value={newPosition.description}
                     onChange={(e) => setNewPosition((s) => ({ ...s, description: e.target.value }))}
                     placeholder="Full description (optional; shown on apply page and below)"
-                    className={styles.blogTextarea}
+                    className={`${styles.blogTextarea} ${styles.positionFullWidth}`}
                     rows={4}
                   />
                 </div>
                 <div className={styles.formActions}>
                   <button
                     type="submit"
-                    disabled={addingPosition || !newPosition.title.trim()}
+                    disabled={addingPosition || !newPosition.title.trim() || !newPosition.category.trim()}
                     className={styles.addButton}
                   >
                     {addingPosition ? 'Adding...' : 'Add position'}
@@ -1255,29 +1328,55 @@ const AdminPage: React.FC = () => {
                                 className={styles.positionInput}
                                 required
                               />
-                              <select
-                                value={editPosition.category}
-                                onChange={(e) =>
-                                  setEditPosition((s) => ({
-                                    ...s,
-                                    category: e.target.value as 'engineering' | 'security' | 'operations',
-                                  }))
-                                }
-                                className={styles.positionInput}
-                              >
-                                <option value="engineering">Engineering</option>
-                                <option value="security">Security</option>
-                                <option value="operations">Operations</option>
-                              </select>
-                              <input
-                                type="text"
-                                value={editPosition.icon}
-                                onChange={(e) =>
-                                  setEditPosition((s) => ({ ...s, icon: e.target.value }))
-                                }
-                                placeholder="Icon name"
-                                className={styles.positionInput}
-                              />
+                              <div className={styles.categoryField}>
+                                <select
+                                  value={
+                                    editCategoryMode === 'new'
+                                      ? '__new__'
+                                      : editPosition.category || positionCategories[0] || '__new__'
+                                  }
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (v === '__new__') {
+                                      setEditCategoryMode('new');
+                                      setEditPosition((s) => ({ ...s, category: '' }));
+                                      return;
+                                    }
+                                    setEditCategoryMode('existing');
+                                    setEditPosition((s) => ({ ...s, category: v }));
+                                  }}
+                                  className={styles.positionInput}
+                                  required={editCategoryMode === 'existing'}
+                                >
+                                  {positionCategories.map((c) => (
+                                    <option key={c} value={c}>
+                                      {c}
+                                    </option>
+                                  ))}
+                                  <option value="__new__">Add new…</option>
+                                </select>
+                                {editCategoryMode === 'new' ? (
+                                  <input
+                                    type="text"
+                                    value={editPosition.category}
+                                    onChange={(e) =>
+                                      setEditPosition((s) => ({ ...s, category: e.target.value }))
+                                    }
+                                    placeholder="New category name"
+                                    className={styles.positionInput}
+                                    required
+                                    maxLength={64}
+                                  />
+                                ) : null}
+                              </div>
+                              <div className={styles.positionFullWidth}>
+                                <p className={styles.fieldLabel}>Icon</p>
+                                <MaterialIconPicker
+                                  name={`edit-position-icon-${position._id}`}
+                                  value={editPosition.icon}
+                                  onChange={(icon) => setEditPosition((s) => ({ ...s, icon }))}
+                                />
+                              </div>
                               <input
                                 type="text"
                                 value={editPosition.tags}
@@ -1307,7 +1406,11 @@ const AdminPage: React.FC = () => {
                             <div className={styles.formActions}>
                               <button
                                 type="submit"
-                                disabled={savingPosition || !editPosition.title.trim()}
+                                disabled={
+                                  savingPosition ||
+                                  !editPosition.title.trim() ||
+                                  !editPosition.category.trim()
+                                }
                                 className={styles.addButton}
                               >
                                 {savingPosition ? 'Saving...' : 'Save changes'}
@@ -1343,20 +1446,27 @@ const AdminPage: React.FC = () => {
                                   Edit
                                 </button>
                                 <button
+                                  type="button"
                                   onClick={() => handleDeletePosition(position._id)}
                                   className={styles.deleteButton}
-                                  title="Deactivate position"
+                                  title="Delete position permanently"
                                 >
-                                  Remove
+                                  Delete
                                 </button>
                               </div>
                             </div>
                             <div className={styles.positionDetailMeta}>
                               <span>
-                                <strong>Category:</strong> {position.category || 'engineering'}
+                                <strong>Category:</strong>{' '}
+                                {formatCategoryLabel(position.category || 'General')}
                               </span>
-                              <span>
-                                <strong>Icon:</strong> {position.icon || 'work'}
+                              <span className={styles.metaWithIcon}>
+                                <strong>Icon:</strong>{' '}
+                                <MaterialIcon
+                                  name={parseMaterialIcon(position.icon)}
+                                  className={styles.metaIcon}
+                                />
+                                {parseMaterialIcon(position.icon)}
                               </span>
                               <span>
                                 <strong>Tags:</strong>{' '}

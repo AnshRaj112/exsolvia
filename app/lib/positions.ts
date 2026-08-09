@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import connectDB from "@/lib/mongodb";
 import Position from "@/models/Position";
-import type { PublicPosition } from "@/app/lib/positions-types";
+import { parseCategory, type PublicPosition } from "@/app/lib/positions-types";
+import { parseMaterialIcon } from "@/app/lib/material-icons";
 
 export type { PublicPosition } from "@/app/lib/positions-types";
 export { getPositionCardBody } from "@/app/lib/positions-types";
@@ -16,18 +17,15 @@ function toPublic(p: {
   isActive?: boolean;
   category?: string;
 }): PublicPosition {
-  const cat = String(p.category ?? "engineering").toLowerCase();
-  const category =
-    cat === "security" || cat === "operations" ? cat : "engineering";
   return {
     _id: String(p._id),
     title: p.title,
     summary: p.summary ?? "",
-    icon: (p.icon ?? "").trim() || "work",
+    icon: parseMaterialIcon(p.icon),
     tags: Array.isArray(p.tags) ? p.tags : [],
     description: p.description ?? "",
     isActive: Boolean(p.isActive),
-    category: category as PublicPosition["category"],
+    category: parseCategory(p.category),
   };
 }
 
