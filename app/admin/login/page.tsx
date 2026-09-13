@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -65,12 +64,6 @@ export default function AdminLoginPage() {
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
-        <p className="mt-6 text-sm text-on-surface-variant">
-          Need an admin account?{" "}
-          <Link href="/admin/signup" className="text-primary-container hover:underline">
-            Sign up
-          </Link>
-        </p>
       </div>
     </main>
   );
