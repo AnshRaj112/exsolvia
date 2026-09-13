@@ -11,12 +11,15 @@ type SessionPayload = {
 };
 
 function getSecret(): string {
-  return (
-    process.env.ADMIN_AUTH_SECRET ||
-    process.env.JWT_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "dev-insecure-secret-change-this"
-  );
+  const secret = process.env.ADMIN_AUTH_SECRET;
+
+  if (!secret) {
+    throw new Error(
+      "ADMIN_AUTH_SECRET is required for admin authentication",
+    );
+  }
+
+  return secret;
 }
 
 function base64url(input: Buffer | string): string {
