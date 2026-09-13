@@ -1,3 +1,31 @@
+# EXSOLVIA frontend
+
+## Rate limiting
+
+All `/api/*` requests pass through a distributed sliding-window limiter. It uses
+Upstash Redis REST, so the counter is shared by every serverless instance. The
+middleware applies a permissive default of 300 requests/minute/IP, with stricter
+policies for login (5/15 minutes/IP), contact submissions (5/hour/IP), and
+job applications (5/hour/IP). Applications also receive a 5/hour/email limit;
+authenticated admin PII reads are limited to 60/minute/admin and CMS mutations
+to 30/minute/admin. Blocked requests return `429`, `Retry-After`, and
+standard `RateLimit-*` response headers. Redis configuration failures return
+`503` in production rather than silently falling back to per-instance memory.
+
+Configure production with:
+
+```env
+UPSTASH_REDIS_REST_URL=https://your-database.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-upstash-rest-token
+RATE_LIMIT_NAMESPACE=exsolvia:rate-limit
+```
+
+`RATE_LIMIT_NAMESPACE` is optional and useful for separating environments that
+share a Redis database. Local development intentionally permits requests when
+the Redis variables are absent; set the variables locally to exercise the real
+distributed path. Run `npm test` to execute the burst and unavailable-store
+security checks.
+
 <!-- This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

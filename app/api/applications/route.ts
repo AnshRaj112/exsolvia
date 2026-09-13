@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Application from '@/models/Application';
 import { requireAdminSession } from '@/lib/admin-auth';
+import { ADMIN_PII_READ_POLICY, APPLICATION_EMAIL_POLICY, enforceRateLimit } from '@/lib/api-rate-limit';
 
 const MAX_MESSAGE = 2500;
 
@@ -29,6 +30,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const rateLimitResponse = await enforceRateLimit(
+      `application-email:${String(email).trim().toLowerCase()}`,
+      APPLICATION_EMAIL_POLICY,
+    );
+    if (rateLimitResponse) return rateLimitResponse;
 
     const resumeStr = resume != null ? String(resume).trim() : '';
     const portfolioStr = portfolio != null ? String(portfolio).trim() : '';
@@ -88,6 +95,8 @@ export async function GET(request: NextRequest) {
     if (!session) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
+    const rateLimitResponse = await enforceRateLimit(`admin:${session.adminId}`, ADMIN_PII_READ_POLICY);
+    if (rateLimitResponse) return rateLimitResponse;
     await connectDB();
     const applications = await Application.find({})
       .sort({ createdAt: -1 });

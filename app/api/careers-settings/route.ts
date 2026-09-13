@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import CareersSettings, { CAREERS_DEFAULTS, type CultureCard } from "@/models/CareersSettings";
 import { requireAdminSession } from "@/lib/admin-auth";
+import { ADMIN_WRITE_POLICY, enforceRateLimit } from "@/lib/api-rate-limit";
 
 export async function GET() {
   try {
@@ -30,6 +31,8 @@ export async function PUT(request: NextRequest) {
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
+    const rateLimitResponse = await enforceRateLimit(`admin:${session.adminId}`, ADMIN_WRITE_POLICY);
+    if (rateLimitResponse) return rateLimitResponse;
     await connectDB();
     const body = await request.json();
 
