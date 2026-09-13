@@ -4,6 +4,7 @@ import Position from '@/models/Position';
 import { requireAdminSession } from '@/lib/admin-auth';
 import { parseCategory } from '@/app/lib/positions-types';
 import { parseMaterialIcon } from '@/app/lib/material-icons';
+import { ADMIN_WRITE_POLICY, enforceRateLimit } from '@/lib/api-rate-limit';
 
 function parseTags(input: unknown): string[] | undefined {
   if (input === undefined) return undefined;
@@ -61,6 +62,8 @@ export async function DELETE(
     if (!session) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
+    const rateLimitResponse = await enforceRateLimit(`admin:${session.adminId}`, ADMIN_WRITE_POLICY);
+    if (rateLimitResponse) return rateLimitResponse;
     await connectDB();
 
     const { id } = await params;
@@ -99,6 +102,8 @@ export async function PATCH(
     if (!session) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
+    const rateLimitResponse = await enforceRateLimit(`admin:${session.adminId}`, ADMIN_WRITE_POLICY);
+    if (rateLimitResponse) return rateLimitResponse;
     await connectDB();
 
     const { id } = await params;

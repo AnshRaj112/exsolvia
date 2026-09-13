@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import ContactInquiry from "@/models/ContactInquiry";
 import { requireAdminSession } from "@/lib/admin-auth";
+import { ADMIN_PII_READ_POLICY, enforceRateLimit } from "@/lib/api-rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +47,8 @@ export async function GET(request: NextRequest) {
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
+    const rateLimitResponse = await enforceRateLimit(`admin:${session.adminId}`, ADMIN_PII_READ_POLICY);
+    if (rateLimitResponse) return rateLimitResponse;
 
     await connectDB();
     const contacts = await ContactInquiry.find({}).sort({ createdAt: -1 });
